@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><MYOS></title>
+
+    <!-- fonts --->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="window" id="welcome" style="top: calc(50% - 160px); left: calc(50% - 200px);">
+
+    <div class="window-header" id="welcomeheader">
+
+        <div class="close-btn" id="closewelcome" title="Close"></div>
+        <span class="window-title">welcome.txt</span>
+
+        <div style="width: 14px;"></div>
+    </div>
+
+    <div class="window-body"
+
+        <img
+            src="https://avatars.githubusercontent.com/u/583231?v=4"
+            alt="Profile picture"
+            class="profile-pic"
+        />
+
+        <h1 class="welcome-title">Hey, I'm <span class="accent">Alex</span></h1>
+        <p class="welcome-subtitle">Developer * Designer * Explorer</p>
+        <p class="welcome-desc">
+            Welcome to a lil corner of the the internet - build like an OS
+            because why have a boring portfolio when you can have a whole
+            custom operating system.
+        </p>
+
+        <div class="link-row">
+            <a href="https://github.com/" target="_blank" class="os-link">GitHub</a>
+            <a href="https://linkedin.com/" target="_blank" class="os-link">Linkedin</a>
+            <a href="mailto:hello@example.com" target="_blank" class="os-link">Email</a>
+        </div>
+    </div>
+</div>
+
+<div class="window" id="notes" style="top:calc(50% - 220px); left: calc(50% - 160px); display: none;">
+
+    <div class="window-header" id="notesheader">
+        <div class="close-btn" id="closenotes" title="Close"></div>
+        <span class="window-title">notes.app</span>
+        <div style="width: 14px;"></div>
+    </div>
+
+    <div class="window-body notes-layout">
+        <div class="note-sidebar" id="notes-sidebar">
+
+            <div class="notes-content" id="notes-content">
+                <p class="notes-placeholder">Pick a note from the list</p>
+            </div>
+        </div>
+    </div>
+    <div class="window" id="about" style="top:calc(50% - 180px); left: calc(50% - 220px); display: none;">
+
+        <div class="window-header" id="aboutheader">
+            <div class="close-btn" id="closeabout" title="Close"></div>
+            <span class="window-title">about.app</span>
+            <div style="width: 14px;"></div>
+        </div>
+
+        <div class="window-body">
+            <h2 class="section-heading">About Me</h2>
+            <p>I'm a teen developer still discovering things and my fav thing is to make people say wait you made that?</p>
+            <ul class="about-list">
+                <li>Based in the earth</li>
+                <li>Currently learning Rust and Go</li>
+                <li>Loves books fr</li>
+            </ul>
+            <h2 class="section-heading" style="margin-top: 20px;">Skills</h2>
+            <div class="skill-tags"
+                <span class="tag">HTML</span>
+                <span class="tag">CSS</span>
+                <span class="tag">JavaScript</span>
+                <span class="tag">Rust</span>
+                <span class="tag">Python</span>
+                <span class="tag">Svelte</span>
+                <span class="tag">TypeScript</span>
+                <span class="tag">Go</span>
+                <span class="tag">Tailwind</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="topbar">
+        <span id="os-name" title="Open welcome screen">My OS</span>
+        <span id="topbar-center">Always learning!!</span>
+        <span id="clock">--:-- --</span>
+        </div>
+
+        <div id="desktop-icons">
+            <div class="icon" id="icon-notes">
+                <div  class=""icon-img">📝</div>
+                <span class="icon-label">Notes</span>
+
+            </div>
+            <div class="icon" id="icon-about">
+                <div class="icon-img">👤</div>
+                <span class="icon-label">About</span>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
+
+
+</body>
+</html>

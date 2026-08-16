@@ -1,0 +1,454 @@
+:root {
+   --color-bg: #0d0d14;
+   --color-glass: rgba(20, 20, 35, 0.78);
+   --color-glass-header: rgba(255, 255, 255, 0.6);
+   --color-border: rgba(255, 255, 255, 0.12);
+   --color-text: #e8e8f0;
+   --color-muted:#888899 ;
+   --color-accent: #7c6dfa;
+   --color-accent-glow: rgba(124, 109, 250, 0.25);
+   --color-red: #f05d5d;
+   --color-tag-bg: rgba(124, 109, 250, 0.15);
+   --font-main: "Space Grotesk", system-ui, sans-serif;
+   --font-mono: "Space Mono", monospace;
+   --radius-window:14px;
+   --radius-btn: 50%;
+   --shadow-window: 0  24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--color-border) ;
+   }
+
+
+   *,   *::before,
+   *::after {
+      box-sizing: border-box;
+      margin: 0 ;
+      padding: 0;
+   }
+
+   html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+   }
+
+   body {
+      font-family: var(--font-main);
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      background-image: radial-gradient(ellipse at 20% 50%, rgba(124, 109, 250 ,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(80, 200, 200 ,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 80%, rgba(240, 93, 93, 0.10) 0%, transparent 50%),
+      linear-gradient(135deg, #0d0d14 0%, #12121f 100%);
+
+      background-size: cover;
+      background-position: center;
+   }
+
+
+   #topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 40px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 16px;
+      background-color: rgba(10, 10, 20, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 1px solid var (--color-border);
+
+      font-family: var(--font-main);
+      font-size: 13px;
+      color: var(--color-text);
+   }
+
+   #os-name {
+       font-weight: 700;
+       letter-spacing: 0.05em;
+       color: var(--color-accent);
+       cursor: pointer;
+       user-select: none;
+       transform: opacity 0.15s;
+   }
+   #os-name:hover {
+      opacity: 0.75;
+
+   }
+
+
+   #topbar-center {
+       color: var(--color-muted);
+       font-size: 12px;
+
+   }
+#clock {
+    color: var(--color-muted);
+    font-size: 12px;
+    letter-spacing: 0.03em;
+
+}
+
+
+
+#deskstop-icons {
+    position: fixed;
+    top: 56px;
+    left: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+}
+
+
+.icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    user-select: none ;
+    transition: background-color 0.15s, transform 0.15s ;
+    width: 68px ;
+
+    }
+
+    .icon:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .icon.selected {
+        background-color: rgba(124, 109, 250, 0.2);
+        outline: 1px solid rgba(124, 109, 250, 0.4);
+    }
+
+    .icon-img{
+        font-size: 32px;
+        line-height: 1;
+        filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+
+    }
+
+
+    .icon-label {
+        font-family: var(--font-main);
+        font-size: 11px;
+        color: #fff;
+        text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+        text-align: center;
+
+    }
+
+
+    .window {
+        position: absolute;
+        z-index: 100;
+
+        display:  flex;
+        flex-direction: column;
+
+        min-width: 320px;
+        max-width: 90vw;
+
+        background-color: var(--color-border);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+
+        border: 1px solid var(--color-border);
+        border: var(--radius-window);
+        box-shadow: var(--shadow-window);
+
+
+
+    animation: windowOpen 0.2s ease-out;
+    }
+
+    @keyframes windowOpen {
+        from {
+            opacity: 0;
+            transform: scale(0.96) translateY(8px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    .window-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+
+        background-color: var(--color-glass-header);
+        border-bottom: 1px solid var(--color-border);
+        border-radius: var(--radius-window) var(--radius-window) 0 0;
+
+        cursor: grab;
+        user-select: none;
+    }
+
+
+    .window-header:active {
+        cursor: grabbing;
+    }
+
+    .window-title {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--color-muted) ;
+        letter-spacing: 0.04em;
+    }
+
+
+    .close-btn {
+        width: 14px;
+        height: 14px;
+        border-radius: var(--radius-btn);
+        background-color: var(--color-red);
+    }
+
+    .close-btn {
+        width: 14px;
+        height: 14px;
+        border-radius: var(--radius-btn);
+        background-color: var(--color-red);
+        border: 1px solid rgba(0,0,0,0.2);
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: filter 0.15s;
+    }
+
+    .close-btn:hover {
+        filter: brightness(1.25);
+    }
+
+    .window-body {
+        padding: 20px 22px;
+        overflow-y: auto;
+        max-height: 70vh;
+    }
+    .profile-pic {
+        width: 52px;
+        height: 52px;
+        border-radius: 50px ;
+        object-fit: cover;
+        border: 2px solid var(--color-accent);
+        display: block;
+        margin-bottom: 14px;
+    }
+
+    .welcome-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 4px;
+        line-height: 1.2;
+    }
+
+    .accent {
+        color: var(--color-accent);
+    }
+
+    .welcome-title {
+        font-size: 13px;
+        color: var(--color-muted);
+        margin-bottom: 12px;
+        font-family: var(--font-mono);
+
+    }
+
+    .welcome-desc {
+        font-size: 14px;
+        line-height: 1.4;
+        color: #b8b8cc;
+        margin-bottom: 18px;
+        max-width: 320px;
+    }
+
+    .link-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+
+    }
+    .os-link {
+      display: inline-block;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-family: var(--font-mono);
+      color: var(--color-accent);
+      background-color: var(--color-accent-glow);
+      border: 1px solid rgba(124, 109, 250, 0.3);
+      border-radius: 20px;
+      text-decoration: none;
+      transition: background-color 0.15s, border-color 0.15s;
+    }
+
+    .os-link:hover {
+      background-color: rgba(124, 109, 250, 0.3);
+      border-color: var(--color-accent);
+    }
+
+
+    /* ============================================================
+       9. Notes App Content
+       ============================================================
+    */
+
+    /* The notes window has a sidebar + main area side by side */
+    .notes-layout {
+      display: flex;
+      flex-direction: row;
+      padding: 0;              /* Override .window-body padding */
+      height: 420px;
+    }
+
+    /* Left sidebar — list of notes */
+    .notes-sidebar {
+      width: 160px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--color-border);
+      overflow-y: auto;
+      padding: 10px 0;
+    }
+
+    /* A single item in the sidebar */
+    .note-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: background-color 0.12s;
+    }
+
+    .note-item:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Highlighted (active) note in the sidebar */
+    .note-item.active {
+      background-color: rgba(124, 109, 250, 0.12);
+      border-left-color: var(--color-accent);
+    }
+
+    .note-item-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 2px;
+    }
+
+    .note-item-date {
+      font-size: 11px;
+      color: var(--color-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* Right side — actual note content */
+    .notes-content {
+      flex: 1;
+      padding: 18px 20px;
+      overflow-y: auto;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #c8c8dc;
+    }
+
+    .notes-placeholder {
+      color: var(--color-muted);
+      font-size: 13px;
+      font-family: var(--font-mono);
+      margin-top: 40%;
+      text-align: center;
+    }
+
+    /* Note content heading */
+    .note-content-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 4px;
+    }
+
+    .note-content-date {
+      font-size: 11px;
+      color: var(--color-muted);
+      font-family: var(--font-mono);
+      margin-bottom: 14px;
+    }
+
+    .note-content-body {
+      font-size: 14px;
+      line-height: 1.75;
+      color: #b8b8d0;
+    }
+
+
+    /* ============================================================
+       10. About App Content
+       ============================================================
+    */
+    .section-heading {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-accent);
+      margin-bottom: 10px;
+      font-family: var(--font-mono);
+    }
+
+    .about-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      font-size: 14px;
+      color: #c0c0d8;
+    }
+
+    /* Skill tag pills */
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: var(--color-accent);
+      background-color: var(--color-tag-bg);
+      border: 1px solid rgba(124, 109, 250, 0.25);
+      border-radius: 20px;
+    }
+
+
+    /* ============================================================
+       11. Utility
+       ============================================================
+    */
+
+    /* Hides an element — added/removed by JS */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Scrollbar styling (Chrome/Edge/Safari) */
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+    }
