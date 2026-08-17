@@ -4,7 +4,7 @@
    --color-glass-header: rgba(255, 255, 255, 0.6);
    --color-border: rgba(255, 255, 255, 0.12);
    --color-text: #e8e8f0;
-   --color-muted:#888899 ;
+   --color-muted: #888899;
    --color-accent: #7c6dfa;
    --color-accent-glow: rgba(124, 109, 250, 0.25);
    --color-red: #f05d5d;
@@ -34,10 +34,7 @@
       font-family: var(--font-main);
       color: var(--color-text);
       background-color: var(--color-bg);
-      background-image: radial-gradient(ellipse at 20% 50%, rgba(124, 109, 250 ,0.18) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 20%, rgba(80, 200, 200 ,0.12) 0%, transparent 50%),
-      radial-gradient(ellipse at 60% 80%, rgba(240, 93, 93, 0.10) 0%, transparent 50%),
-      linear-gradient(135deg, #0d0d14 0%, #12121f 100%);
+      background-image: url('wallpapers/4k-black-hole-with-bright-horizon-kug5rf2bs46mxcur.webp');
 
       background-size: cover;
       background-position: center;
@@ -58,7 +55,8 @@
       background-color: rgba(10, 10, 20, 0.65);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-radius: 1px solid var (--color-border);
+      border: 1px solid var(--color-border);
+      border-radius: 1px;
 
       font-family: var(--font-main);
       font-size: 13px;
@@ -71,7 +69,7 @@
        color: var(--color-accent);
        cursor: pointer;
        user-select: none;
-       transform: opacity 0.15s;
+        transition: opacity 0.15s;
    }
    #os-name:hover {
       opacity: 0.75;
@@ -93,7 +91,7 @@
 
 
 
-#deskstop-icons {
+ #desktop-icons {
     position: fixed;
     top: 56px;
     left: 20px;
@@ -156,12 +154,12 @@
         min-width: 320px;
         max-width: 90vw;
 
-        background-color: var(--color-border);
+        background-color: var(--color-glass);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
 
         border: 1px solid var(--color-border);
-        border: var(--radius-window);
+        border-radius: var(--radius-window);
         box-shadow: var(--shadow-window);
 
 
@@ -255,12 +253,11 @@
         color: var(--color-accent);
     }
 
-    .welcome-title {
+    .welcome-subtitle {
         font-size: 13px;
         color: var(--color-muted);
         margin-bottom: 12px;
         font-family: var(--font-mono);
-
     }
 
     .welcome-desc {
