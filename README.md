@@ -5,3 +5,4 @@ A portfolio styled like a desktop operating system. Open windows, drag them arou
 ## Usage
 
 Open `index.html` in a browser.
+or visit [website](https://zenformality.github.io/web-os/)
