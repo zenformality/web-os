@@ -20,6 +20,11 @@ const WALLPAPERS = [
   'https://images.unsplash.com/photo-1494500764479-0c8f2919a3d8?w=1920&q=80',
 ];
 
+const MUSIC_API = {
+  base: 'https://musicapi.x007.workers.dev',
+  searchEngine: 'seevn',
+};
+
 const THEME_COLORS = {
   midnight: ['#0d0d14', '#7c6dfa'],
   ocean: ['#0a1628', '#3b9eff'],
@@ -30,14 +35,29 @@ const THEME_COLORS = {
   cyberpunk: ['#0f001a', '#00ffff'],
 };
 
+const ICONS = {
+  welcome: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>`,
+  about: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  projects: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>`,
+  notes: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>`,
+  terminal: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>`,
+  calculator: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10.01"/><line x1="12" y1="10" x2="12" y2="10.01"/><line x1="16" y1="10" x2="16" y2="10.01"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="16" y1="14" x2="16" y2="14.01"/><line x1="8" y1="18" x2="8" y2="18.01"/><line x1="12" y1="18" x2="16" y2="18.01"/></svg>`,
+  settings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+  browser: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+  music: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
+  weather: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>`,
+  calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+  tasks: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/></svg>`,
+};
+
 /* ============================================
-   APPS REGISTRY
-   ============================================ */
+    APPS REGISTRY
+    ============================================ */
 const APPS = {
   welcome: {
     id: 'welcome',
     title: 'Welcome',
-    icon: '👋',
+    icon: ICONS.welcome,
     width: 420,
     height: 400,
     render: renderWelcome,
@@ -46,7 +66,7 @@ const APPS = {
   about: {
     id: 'about',
     title: 'About Me',
-    icon: '👤',
+    icon: ICONS.about,
     width: 440,
     height: 420,
     render: renderAbout,
@@ -55,7 +75,7 @@ const APPS = {
   projects: {
     id: 'projects',
     title: 'Projects',
-    icon: '🚀',
+    icon: ICONS.projects,
     width: 520,
     height: 400,
     render: renderProjects,
@@ -64,7 +84,7 @@ const APPS = {
   notes: {
     id: 'notes',
     title: 'Notes',
-    icon: '📝',
+    icon: ICONS.notes,
     width: 500,
     height: 420,
     render: renderNotes,
@@ -73,7 +93,7 @@ const APPS = {
   terminal: {
     id: 'terminal',
     title: 'Terminal',
-    icon: '💻',
+    icon: ICONS.terminal,
     width: 520,
     height: 340,
     render: renderTerminal,
@@ -82,7 +102,7 @@ const APPS = {
   calculator: {
     id: 'calculator',
     title: 'Calculator',
-    icon: '🧮',
+    icon: ICONS.calculator,
     width: 280,
     height: 400,
     render: renderCalculator,
@@ -91,7 +111,7 @@ const APPS = {
   settings: {
     id: 'settings',
     title: 'Settings',
-    icon: '⚙️',
+    icon: ICONS.settings,
     width: 480,
     height: 440,
     render: renderSettings,
@@ -100,7 +120,7 @@ const APPS = {
   browser: {
     id: 'browser',
     title: 'Browser',
-    icon: '🌐',
+    icon: ICONS.browser,
     width: 640,
     height: 480,
     render: renderBrowser,
@@ -109,7 +129,7 @@ const APPS = {
   music: {
     id: 'music',
     title: 'Music',
-    icon: '🎵',
+    icon: ICONS.music,
     width: 400,
     height: 420,
     render: renderMusic,
@@ -118,7 +138,7 @@ const APPS = {
   weather: {
     id: 'weather',
     title: 'Weather',
-    icon: '🌤️',
+    icon: ICONS.weather,
     width: 320,
     height: 360,
     render: renderWeather,
@@ -127,7 +147,7 @@ const APPS = {
   calendar: {
     id: 'calendar',
     title: 'Calendar',
-    icon: '📅',
+    icon: ICONS.calendar,
     width: 340,
     height: 380,
     render: renderCalendar,
@@ -136,7 +156,7 @@ const APPS = {
   tasks: {
     id: 'tasks',
     title: 'Tasks',
-    icon: '✅',
+    icon: ICONS.tasks,
     width: 400,
     height: 400,
     render: renderTasks,
@@ -171,6 +191,12 @@ const state = {
   currentTrack: null,
   musicProgress: 0,
   musicInterval: null,
+
+  musicResults: false,
+  musicAudio: null,
+  musicHls: null,
+  musicSearchQuery: '',
+
   calcDisplay: '0',
   calcPrev: null,
   calcOperator: null,
@@ -501,7 +527,7 @@ function boot() {
     'Starting window manager...',
     'Loading apps...',
     'Mounting file system...',
-    'Welcome to Alex OS',
+    'Welcome to ZI OS',
   ];
 
   let i = 0;
@@ -576,7 +602,7 @@ function renderWelcome() {
   return `
     <div class="flex flex-col items-center text-center">
       <img src="https://avatars.githubusercontent.com/u/583231?v=4" alt="Profile" class="profile-pic" />
-      <h1 class="text-2xl font-bold mb-2">Hey, I'm <span class="text-accent">Alex</span></h1>
+      <h1 class="text-2xl font-bold mb-2">Hey, I'm <span class="text-accent">ZI</span></h1>
       <p class="text-sm text-[var(--muted)] font-mono mb-3">Developer * Designer * Explorer</p>
       <p class="text-sm text-[var(--text-secondary)] mb-5 max-w-[320px] leading-relaxed">
         Welcome to a lil corner of the internet - build like an OS because why have a boring portfolio when you can have a whole custom operating system.
@@ -613,12 +639,12 @@ function renderAbout() {
 
 function renderProjects() {
   const projects = [
-    { name: 'web-os', desc: 'A portfolio styled like a desktop operating system.', icon: '💻' },
-    { name: 'TaskFlow', desc: 'Minimalist task management app with drag-and-drop.', icon: '📋' },
-    { name: 'DevTools UI', desc: 'Developer dashboard with live metrics and logs.', icon: '📊' },
-    { name: 'ChatBot', desc: 'AI-powered chat interface with streaming responses.', icon: '🤖' },
-    { name: 'WeatherNow', desc: 'Real-time weather app with beautiful visualizations.', icon: '🌤️' },
-    { name: 'CodePen Clone', desc: 'Online code editor with live preview and sharing.', icon: '✏️' },
+    { name: 'web-os', desc: 'A portfolio styled like a desktop operating system.', icon: ICONS.terminal },
+    { name: 'TaskFlow', desc: 'Minimalist task management app with drag-and-drop.', icon: ICONS.tasks },
+    { name: 'DevTools UI', desc: 'Developer dashboard with live metrics and logs.', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>' },
+    { name: 'ChatBot', desc: 'AI-powered chat interface with streaming responses.', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' },
+    { name: 'WeatherNow', desc: 'Real-time weather app with beautiful visualizations.', icon: ICONS.weather },
+    { name: 'CodePen Clone', desc: 'Online code editor with live preview and sharing.', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>' },
   ];
   return `
     <div>
@@ -626,7 +652,7 @@ function renderProjects() {
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         ${projects.map(p => `
           <div class="card">
-            <div class="text-2xl mb-2">${p.icon}</div>
+            <div class="text-2xl mb-2" style="display:flex;align-items:center;justify-content:center;height:32px;">${p.icon}</div>
             <div class="font-semibold text-sm mb-1">${escapeHtml(p.name)}</div>
             <div class="text-xs text-[var(--muted)]">${escapeHtml(p.desc)}</div>
           </div>
@@ -695,7 +721,7 @@ function renderTerminal() {
     <div class="flex flex-col h-full">
       <div id="terminal-output" class="terminal-output flex-1 overflow-y-auto mb-2" style="max-height:260px;"></div>
       <div class="terminal-input-line">
-        <span class="terminal-prompt">visitor@alex-os:~$</span>
+        <span class="terminal-prompt">visitor@ZI-os:~$</span>
         <input type="text" id="terminal-input" class="terminal-input" autocomplete="off" spellcheck="false" />
       </div>
     </div>
@@ -716,7 +742,7 @@ function setupTerminal(el, appId) {
   }
 
   function printWelcome() {
-    print('Alex OS Terminal v1.0.0');
+    print('ZI OS Terminal v1.0.0');
     print('Type "help" for available commands.\n');
   }
 
@@ -724,7 +750,7 @@ function setupTerminal(el, appId) {
     const cmd = cmdRaw.trim();
     if (!cmd) return;
 
-    print(`visitor@alex-os:~$ ${cmd}`);
+    print(`visitor@ZI-os:~$ ${cmd}`);
     state.terminalHistory.push(cmd);
     state.terminalHistoryIndex = state.terminalHistory.length;
 
@@ -770,9 +796,9 @@ function setupTerminal(el, appId) {
         break;
       case 'neofetch':
         print('       ___       ');
-        print('      /   \\      visitor@alex-os');
+        print('      /   \\      visitor@ZI-os');
         print('     /     \\     -----------');
-        print('    / Alex  \\    OS: Web OS v1.0');
+        print('    / ZI  \\    OS: Web OS v1.0');
         print('   /  OS    \\   Host: Browser');
         print('  /_________\\   Resolution: ' + screen.width + 'x' + screen.height);
         print('                 Theme: ' + state.theme);
@@ -937,9 +963,117 @@ function setupCalculator(el, appId) {
 
 function renderSettings() {
   const themeOptions = Object.entries(THEMES).map(([key, name]) => `
-    <div class="theme-option ${state.theme === key ? 'active' : ''}" data-theme="${key}">
-      <div class="theme-preview" style="background: linear-gradient(135deg, ${THEME_COLORS[key][0]}, ${THEME_COLORS[key][1]})"></div>
-      <div class="theme-name">${name}</div>
+    <div
+      class="theme-option ${state.theme === key ? 'active' : ''}"
+      data-theme="${key}"
+    >
+      <div class="theme-preview">
+
+        <svg
+          class="theme-preview-svg"
+          viewBox="0 0 120 70"
+          preserveAspectRatio="xMidYMid slice"
+        >
+
+          <!-- Background -->
+          <defs>
+            <linearGradient
+              id="theme-gradient-${key}"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop
+                offset="0%"
+                stop-color="${THEME_COLORS[key][0]}"
+              />
+
+              <stop
+                offset="100%"
+                stop-color="${THEME_COLORS[key][1]}"
+              />
+            </linearGradient>
+          </defs>
+
+          <rect
+            width="120"
+            height="70"
+            rx="12"
+            fill="url(#theme-gradient-${key})"
+          />
+
+          <!-- Fake window -->
+          <rect
+            x="9"
+            y="9"
+            width="102"
+            height="52"
+            rx="8"
+            fill="rgba(0,0,0,0.28)"
+          />
+
+          <!-- Window controls -->
+          <circle
+            cx="20"
+            cy="19"
+            r="3"
+            fill="rgba(255,255,255,0.9)"
+          />
+
+          <circle
+            cx="30"
+            cy="19"
+            r="3"
+            fill="rgba(255,255,255,0.55)"
+          />
+
+          <circle
+            cx="40"
+            cy="19"
+            r="3"
+            fill="rgba(255,255,255,0.3)"
+          />
+
+          <!-- Fake text -->
+          <rect
+            x="17"
+            y="30"
+            width="50"
+            height="4"
+            rx="2"
+            fill="rgba(255,255,255,0.75)"
+          />
+
+          <rect
+            x="17"
+            y="39"
+            width="34"
+            height="4"
+            rx="2"
+            fill="rgba(255,255,255,0.35)"
+          />
+
+          <!-- Fake play button -->
+          <circle
+            cx="88"
+            cy="43"
+            r="10"
+            fill="rgba(255,255,255,0.9)"
+          />
+
+          <path
+            d="M85 37v12l8-6z"
+            fill="${THEME_COLORS[key][1]}"
+          />
+
+        </svg>
+
+      </div>
+
+      <div class="theme-name">
+        ${name}
+      </div>
     </div>
   `).join('');
 
@@ -960,7 +1094,7 @@ function renderSettings() {
       <div class="settings-section">
         <div class="settings-label">About</div>
         <div class="text-xs text-[var(--muted)]">
-          Alex OS v1.0.0<br>
+          ZI OS v1.0.0<br>
           Built with vanilla JS + Tailwind CSS<br>
           No frameworks, no build step.
         </div>
@@ -998,7 +1132,7 @@ function renderBrowser() {
   return `
     <div class="flex flex-col h-full">
       <div class="flex gap-2 mb-3">
-        <input type="text" id="browser-url" class="input flex-1" placeholder="Enter URL (e.g., https://example.com)" value="https://en.wikipedia.org/wiki/Special:Random" />
+        <input type="text" id="browser-url" class="input flex-1" placeholder="Enter URL or search google" value="https://en.wikipedia.org/wiki/Special:Random" />
         <button id="browser-go" class="btn btn-primary btn-sm">Go</button>
       </div>
       <div class="flex-1 bg-black/20 rounded-lg overflow-hidden border border-[var(--border)]" style="min-height:200px;">
@@ -1015,11 +1149,38 @@ function setupBrowser(el, appId) {
   const frame = el.querySelector('#browser-frame');
 
   function navigate() {
-    let url = urlInput.value.trim();
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      url = 'https://' + url;
+    const input = urlInput.value.trim();
+    if (!input) {
+      return;
+
     }
-    frame.src = url;
+
+    const looksLikeUrl =  /^https?:\/\//i.test(input) ||
+       /^localhost(?::\d+)?(?:\/|$)/i.test(input) ||
+       /^127\.0\.0\.1(?::\d+)?(?:\/|$)/i.test(input) ||
+       /^[a-z0-9.-]+\.[a-z]{2,}(?:\/.*)?$/i.test(input);
+
+    if (!looksLikeUrl) {
+      let url = input;
+
+      if (
+        !url.startsWith('http://') &&
+        !url.startsWith('https://')
+      ) {
+        url = 'https://' + url;
+      }
+
+      frame.src = url;
+      urlInput.value = url;
+
+      return;
+    }
+
+    const googleSearch =
+      `https://www.google.com/search?q=${encodeURIComponent(input)}`;
+
+    frame.src = googleSearch;
+
   }
 
   goBtn.addEventListener('click', navigate);
@@ -1031,100 +1192,367 @@ function setupBrowser(el, appId) {
 }
 
 function renderMusic() {
-  const tracks = [
-    { name: 'Lo-Fi Study', artist: 'Chill Beats', icon: '🎧' },
-    { name: 'Synthwave Mix', artist: 'Retro Vibes', icon: '🎹' },
-    { name: 'Ambient Flow', artist: 'Calm Sounds', icon: '🎼' },
-    { name: 'Deep Focus', artist: 'Brain Food', icon: '🎵' },
-    { name: 'Night Drive', artist: 'Neon City', icon: '🌃' },
-    { name: 'Coffee Shop', artist: 'Morning Brew', icon: '☕' },
-  ];
-
-  const tracksHtml = tracks.map((t, i) => `
-    <div class="music-track" data-track="${i}">
-      <div class="music-track-icon">${t.icon}</div>
-      <div class="music-track-name">${escapeHtml(t.name)}</div>
-      <div class="music-track-artist">${escapeHtml(t.artist)}</div>
-    </div>
-  `).join('');
-
   return `
-    <div>
-      <div class="flex items-center gap-3 mb-4 p-3 bg-black/20 rounded-lg">
-        <div class="text-3xl" id="music-playing-icon">🎵</div>
-        <div class="flex-1">
-          <div class="text-sm font-semibold" id="music-now-playing">Select a track</div>
-          <div class="text-xs text-[var(--muted)]" id="music-status">Paused</div>
-        </div>
-        <button id="music-play-btn" class="btn btn-primary btn-sm">Play</button>
+    <div class="music-app">
+      <div class="music-search-row">
+        <input
+          type="text"
+          id="music-search"
+          class="input flex-1"
+          placeholder="Search for a song..."
+        />
+
+        <button id="music-search-btn" class="btn btn-primary btn-sm">
+          Search
+        </button>
       </div>
-      <div class="music-grid">${tracksHtml}</div>
+
+      <div id="music-search-status"
+           class="text-xs text-[var(--muted)] mt-2">
+        Search for a song to begin.
+      </div>
+
+      <div class="music-now-playing mt-3">
+        <div class="text-3xl" id="music-playing-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;display:inline;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <div
+            class="text-sm font-semibold truncate"
+            id="music-now-playing"
+          >
+            Nothing playing
+          </div>
+
+          <div
+            class="text-xs text-[var(--muted)]"
+            id="music-status"
+          >
+            Paused
+          </div>
+        </div>
+
+        <button
+          id="music-play-btn"
+          class="btn btn-primary btn-sm"
+          disabled
+        >
+          Play
+        </button>
+      </div>
+
+      <div id="music-results" class="music-grid mt-3">
+        <div class="text-xs text-[var(--muted)]">
+          Search results will appear here.
+        </div>
+      </div>
+
+      <audio id="music-audio" preload="none"></audio>
     </div>
   `;
 }
 
 function setupMusic(el, appId) {
-  const tracks = [
-    { name: 'Lo-Fi Study', artist: 'Chill Beats', icon: '🎧' },
-    { name: 'Synthwave Mix', artist: 'Retro Vibes', icon: '🎹' },
-    { name: 'Ambient Flow', artist: 'Calm Sounds', icon: '🎼' },
-    { name: 'Deep Focus', artist: 'Brain Food', icon: '🎵' },
-    { name: 'Night Drive', artist: 'Neon City', icon: '🌃' },
-    { name: 'Coffee Shop', artist: 'Morning Brew', icon: '☕' },
-  ];
+  const searchInput = el.querySelector('#music-search');
+  const searchBtn = el.querySelector('#music-search-btn');
+  const resultsEl = el.querySelector('#music-results');
+  const searchStatus = el.querySelector('#music-search-status');
 
   const playBtn = el.querySelector('#music-play-btn');
   const nowPlaying = el.querySelector('#music-now-playing');
   const statusEl = el.querySelector('#music-status');
   const playingIcon = el.querySelector('#music-playing-icon');
 
-  let currentTrackIndex = null;
+  const audio = el.querySelector('#music-audio');
 
-  el.querySelectorAll('.music-track').forEach(trackEl => {
-    trackEl.addEventListener('click', () => {
-      const idx = parseInt(trackEl.dataset.track);
-      currentTrackIndex = idx;
-      state.currentTrack = idx;
-      nowPlaying.textContent = `${tracks[idx].name} - ${tracks[idx].artist}`;
-      statusEl.textContent = 'Playing';
-      playingIcon.textContent = '🎶';
-      playBtn.textContent = 'Pause';
-      el.querySelectorAll('.music-track').forEach(t => t.classList.remove('playing'));
-      trackEl.classList.add('playing');
-      state.musicPlaying = true;
-    });
-  });
+  let currentIndex = null;
+  let hls = null;
 
-  playBtn.addEventListener('click', () => {
-    if (state.currentTrack === null) {
-      showNotification('Music', 'Select a track first');
+  state.musicAudio = audio;
+
+  async function searchMusic() {
+    const query = searchInput.value.trim();
+
+    if (!query) {
+      searchStatus.textContent = 'Enter a song name first.';
       return;
     }
-    state.musicPlaying = !state.musicPlaying;
-    if (state.musicPlaying) {
+
+    searchStatus.textContent = 'Searching...';
+    searchBtn.disabled = true;
+
+    try {
+      const url =
+        `${MUSIC_API.base}/search` +
+        `?q=${encodeURIComponent(query)}` +
+        `&searchEngine=${encodeURIComponent(MUSIC_API.searchEngine)}`;
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`Search failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!Array.isArray(data.response) || data.response.length === 0) {
+        resultsEl.innerHTML = `
+          <div class="text-xs text-[var(--muted)]">
+            No results found.
+          </div>
+        `;
+
+        searchStatus.textContent = 'No results found.';
+        return;
+      }
+
+      state.musicResults = data.response;
+
+      resultsEl.innerHTML = data.response
+        .map((track, index) => `
+          <div
+            class="music-track"
+            data-track="${index}"
+          >
+            <img
+              src="${escapeHtml(track.img || '')}"
+              class="music-track-cover"
+              alt=""
+              loading="lazy"
+              onerror="this.style.display='none'"
+            />
+
+            <div class="music-track-info">
+              <div class="music-track-name">
+                ${escapeHtml(track.title || 'Unknown title')}
+              </div>
+
+              <div class="music-track-artist">
+                Tap to play
+              </div>
+            </div>
+
+            <div class="music-track-play">
+              ▶
+            </div>
+          </div>
+        `)
+        .join('');
+
+      searchStatus.textContent =
+        `${data.response.length} result(s) found.`;
+
+      el.querySelectorAll('.music-track').forEach(trackEl => {
+        trackEl.addEventListener('click', () => {
+          const index = Number(trackEl.dataset.track);
+          playTrack(index);
+        });
+      });
+
+    } catch (error) {
+      console.error('Music search error:', error);
+
+      searchStatus.textContent =
+        'Music API is unavailable right now.';
+
+      resultsEl.innerHTML = `
+        <div class="text-xs text-[var(--muted)]">
+          Could not connect to the music service.
+        </div>
+      `;
+    } finally {
+      searchBtn.disabled = false;
+    }
+  }
+
+  async function playTrack(index) {
+    const track = state.musicResults[index];
+
+    if (!track || !track.id) {
+      return;
+    }
+
+    currentIndex = index;
+    state.currentTrack = index;
+
+    nowPlaying.textContent =
+      track.title || 'Unknown title';
+
+    statusEl.textContent = 'Loading...';
+    playingIcon.textContent = '♪';
+
+    playBtn.disabled = true;
+
+    try {
+      const response = await fetch(
+        `${MUSIC_API.base}/fetch?id=${encodeURIComponent(track.id)}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Fetch failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      const streamUrl = data.response;
+
+      if (!streamUrl) {
+        throw new Error('No stream URL returned');
+      }
+
+      /*
+       * Destroy previous HLS instance.
+       */
+      if (hls) {
+        hls.destroy();
+        hls = null;
+      }
+
+      /*
+       * HLS (.m3u8)
+       */
+      if (streamUrl.includes('.m3u8')) {
+
+        if (window.Hls && Hls.isSupported()) {
+          hls = new Hls();
+
+          hls.loadSource(streamUrl);
+          hls.attachMedia(audio);
+
+          hls.on(Hls.Events.MANIFEST_PARSED, async () => {
+            await audio.play();
+
+            state.musicPlaying = true;
+
+            statusEl.textContent = 'Playing';
+            playingIcon.textContent = '♫';
+            playBtn.textContent = 'Pause';
+            playBtn.disabled = false;
+          });
+
+        } else if (
+          audio.canPlayType('application/vnd.apple.mpegurl')
+        ) {
+          /*
+           * Safari/native HLS.
+           */
+          audio.src = streamUrl;
+
+          await audio.play();
+
+          state.musicPlaying = true;
+
+          statusEl.textContent = 'Playing';
+          playingIcon.textContent = '♫';
+          playBtn.textContent = 'Pause';
+          playBtn.disabled = false;
+
+        } else {
+          throw new Error(
+            'This browser does not support HLS streams.'
+          );
+        }
+
+      } else {
+        /*
+         * Normal MP3 / MP4 stream.
+         */
+        audio.src = streamUrl;
+
+        await audio.play();
+
+        state.musicPlaying = true;
+
+        statusEl.textContent = 'Playing';
+        playingIcon.textContent = '♫';
+        playBtn.textContent = 'Pause';
+        playBtn.disabled = false;
+      }
+
+      el.querySelectorAll('.music-track')
+        .forEach(item => item.classList.remove('playing'));
+
+      const selected =
+        el.querySelector(`[data-track="${index}"]`);
+
+      if (selected) {
+        selected.classList.add('playing');
+      }
+
+    } catch (error) {
+      console.error('Music playback error:', error);
+
+      statusEl.textContent =
+        'Unable to play this track';
+
+      playBtn.disabled = false;
+    }
+  }
+
+  searchBtn.addEventListener('click', searchMusic);
+
+  searchInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      searchMusic();
+    }
+  });
+
+  playBtn.addEventListener('click', async () => {
+    if (!audio.src && !hls) {
+      if (currentIndex !== null) {
+        await playTrack(currentIndex);
+      }
+
+      return;
+    }
+
+    if (audio.paused) {
+      await audio.play();
+
+      state.musicPlaying = true;
       statusEl.textContent = 'Playing';
-      playingIcon.textContent = '🎶';
       playBtn.textContent = 'Pause';
     } else {
+      audio.pause();
+
+      state.musicPlaying = false;
       statusEl.textContent = 'Paused';
-      playingIcon.textContent = '🎵';
       playBtn.textContent = 'Play';
     }
   });
 
-  return () => {
+  audio.addEventListener('ended', () => {
     state.musicPlaying = false;
-    state.currentTrack = null;
+    statusEl.textContent = 'Ended';
+    playBtn.textContent = 'Play';
+  });
+
+  return () => {
+    if (hls) {
+      hls.destroy();
+      hls = null;
+    }
+
+    audio.pause();
+    audio.src = '';
+
+    state.musicAudio = null;
+    state.musicPlaying = false;
   };
 }
 
 function renderWeather() {
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const today = new Date().getDay();
+  const sunSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;display:inline;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+  const cloudSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;display:inline;"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>';
+  const rainSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;display:inline;"><path d="M16 13v8M8 13v8M12 15v8"/><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>';
+  const weatherIcons = [sunSvg, cloudSvg, cloudSvg, rainSvg, cloudSvg, sunSvg, cloudSvg];
   return `
     <div>
       <div class="weather-card mb-4">
-        <div class="text-4xl mb-2">☀️</div>
+        <div class="text-4xl mb-2">${sunSvg}</div>
         <div class="weather-temp">24°C</div>
         <div class="text-sm text-[var(--muted)]">Sunny</div>
         <div class="text-xs text-[var(--text-secondary)] mt-1">Feels like 26°C</div>
@@ -1133,7 +1561,7 @@ function renderWeather() {
         ${days.map((d, i) => `
           <div class="card py-2 ${i === today ? 'border-[var(--accent)]' : ''}">
             <div class="font-semibold text-[var(--muted)]">${d}</div>
-            <div class="text-lg my-1">${i === today ? '☀️' : ['⛅','☁️','🌧️','⛅','☀️','☀️','⛅'][i]}</div>
+            <div class="text-lg my-1">${i === today ? sunSvg : weatherIcons[i]}</div>
             <div>${[24,22,19,23,25,27,21][i]}°</div>
           </div>
         `).join('')}
@@ -1147,9 +1575,13 @@ function renderCalendar() {
   return `
     <div>
       <div class="flex items-center justify-between mb-3">
-        <button id="cal-prev" class="btn btn-sm">◀</button>
+        <button id="cal-prev" class="btn btn-sm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline;"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
         <h3 class="font-semibold text-sm" id="cal-month-year"></h3>
-        <button id="cal-next" class="btn btn-sm">▶</button>
+        <button id="cal-next" class="btn btn-sm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline;"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
       <div class="calendar-grid" id="cal-grid"></div>
     </div>
@@ -1361,11 +1793,13 @@ function setupEventListeners() {
   });
 
   $('power-shortcut').addEventListener('click', () => {
-    if (confirm('Shut down Alex OS?')) {
+    if (confirm('Shut down ZI OS?')) {
       document.body.innerHTML = `
         <div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#000;color:#888;font-family:monospace;flex-direction:column;gap:12px;">
-          <div style="font-size:48px;">💤</div>
-          <div>Alex OS has been shut down.</div>
+          <div style="font-size:48px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px;display:inline;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+          </div>
+          <div>ZI OS has been shut down.</div>
           <div style="font-size:12px;color:#555;">Close the tab to fully exit.</div>
         </div>
       `;

@@ -1,24 +1,29 @@
 /* ============================================
    THEME VARIABLES
    ============================================ */
-:root,
-[data-theme="midnight"] {
-  --bg: #0d0d14;
-  --glass: rgba(20, 20, 35, 0.78);
-  --glass-header: rgba(255, 255, 255, 0.08);
-  --border: rgba(255, 255, 255, 0.12);
-  --text: #e8e8f0;
-  --text-secondary: #b8b8cc;
-  --muted: #888899;
-  --accent: #7c6dfa;
-  --accent-glow: rgba(124, 109, 250, 0.25);
-  --red: #f05d5d;
-  --tag-bg: rgba(124, 109, 250, 0.15);
-  --tag-border: rgba(124, 109, 250, 0.3);
-  --taskbar: rgba(10, 10, 20, 0.65);
-  --scrollbar: rgba(255, 255, 255, 0.12);
-  --shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--border);
-}
+  :root,
+  [data-theme="midnight"] {
+    --bg: #0d0d14;
+    --glass: rgba(20, 20, 35, 0.78);
+    --glass-header: rgba(255, 255, 255, 0.08);
+    --border: rgba(255, 255, 255, 0.12);
+    --text: #e8e8f0;
+    --text-secondary: #b8b8cc;
+    --muted: #888899;
+    --accent: #7c6dfa;
+    --accent-glow: rgba(124, 109, 250, 0.25);
+    --red: #f05d5d;
+    --tag-bg: rgba(124, 109, 250, 0.15);
+    --tag-border: rgba(124, 109, 250, 0.3);
+    --taskbar: rgba(10, 10, 20, 0.65);
+    --scrollbar: rgba(255, 255, 255, 0.12);
+    --shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--border);
+    --font-sans: 'Space Grotesk', system-ui, sans-serif;
+    --font-mono: 'Space Mono', monospace;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --radius-full: 9999px;
+  }
 
 [data-theme="ocean"] {
   --bg: #0a1628;
@@ -243,9 +248,17 @@ body {
 }
 
 .icon-img {
-  font-size: 36px;
-  line-height: 1;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+}
+
+.icon-img svg {
+  width: 32px;
+  height: 32px;
 }
 
 .icon-label {
@@ -476,7 +489,16 @@ body {
 }
 
 .taskbar-item-icon {
-  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.taskbar-item-icon svg {
+  width: 14px;
+  height: 14px;
 }
 
 #system-tray {
@@ -585,7 +607,16 @@ body {
 }
 
 .start-app-icon {
-  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.start-app-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
 .start-app-name {
@@ -1065,8 +1096,17 @@ body {
 }
 
 .music-track-icon {
-  font-size: 32px;
-  margin-bottom: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 6px;
+}
+
+.music-track-icon svg {
+  width: 32px;
+  height: 32px;
 }
 
 .music-track-name {
@@ -1244,8 +1284,16 @@ body {
 .theme-preview {
   width: 100%;
   height: 40px;
-  border-radius: 4px;
-  margin-bottom: 6px;
+  overflow: hidden;
+  border-radius: 12px;
+
+
+}
+
+.theme-preview-svg {
+    display: block;
+    width: 100%;
+    height: auto;
 }
 
 .theme-name {
