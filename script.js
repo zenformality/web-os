@@ -21,8 +21,9 @@ const WALLPAPERS = [
 ];
 
 const MUSIC_API = {
-  base: 'https://musicapi.x007.workers.dev',
-  searchEngine: 'seevn',
+  searchUrl: 'https://itunes.apple.com/search',
+  country: 'US',
+  limit: 20,
 };
 
 const THEME_COLORS = {
@@ -1267,7 +1268,6 @@ function setupMusic(el, appId) {
   const audio = el.querySelector('#music-audio');
 
   let currentIndex = null;
-  let hls = null;
 
   state.musicAudio = audio;
 
@@ -1284,9 +1284,7 @@ function setupMusic(el, appId) {
 
     try {
       const url =
-        `${MUSIC_API.base}/search` +
-        `?q=${encodeURIComponent(query)}` +
-        `&searchEngine=${encodeURIComponent(MUSIC_API.searchEngine)}`;
+        `${MUSIC_API.searchUrl}?term=${encodeURIComponent(query)}&entity=song&limit=${MUSIC_API.limit}&country=${MUSIC_API.country}`;
 
       const response = await fetch(url);
 
@@ -1296,7 +1294,7 @@ function setupMusic(el, appId) {
 
       const data = await response.json();
 
-      if (!Array.isArray(data.response) || data.response.length === 0) {
+      if (!Array.isArray(data.results) || data.results.length === 0) {
         resultsEl.innerHTML = `
           <div class="text-xs text-[var(--muted)]">
             No results found.
@@ -1307,29 +1305,25 @@ function setupMusic(el, appId) {
         return;
       }
 
-      state.musicResults = data.response;
+      state.musicResults = data.results;
 
-      resultsEl.innerHTML = data.response
-        .map((track, index) => `
+      resultsEl.innerHTML = data.results
+        .map((track, index) => {
+          const artworkUrl = (track.artworkUrl100 || '').replace('100x100', '600x600');
+          return `
           <div
             class="music-track"
             data-track="${index}"
           >
-            <img
-              src="${escapeHtml(track.img || '')}"
-              class="music-track-cover"
-              alt=""
-              loading="lazy"
-              onerror="this.style.display='none'"
-            />
+            ${artworkUrl ? `<img src="${escapeHtml(artworkUrl)}" class="music-track-cover" alt="" loading="lazy" onerror="this.style.display='none'" />` : ''}
 
             <div class="music-track-info">
               <div class="music-track-name">
-                ${escapeHtml(track.title || 'Unknown title')}
+                ${escapeHtml(track.trackName || 'Unknown title')}
               </div>
 
               <div class="music-track-artist">
-                Tap to play
+                ${escapeHtml(track.artistName || 'Unknown artist')}
               </div>
             </div>
 
@@ -1337,11 +1331,12 @@ function setupMusic(el, appId) {
               ▶
             </div>
           </div>
-        `)
+        `;
+        })
         .join('');
 
       searchStatus.textContent =
-        `${data.response.length} result(s) found.`;
+        `${data.results.length} result(s) found.`;
 
       el.querySelectorAll('.music-track').forEach(trackEl => {
         trackEl.addEventListener('click', () => {
@@ -1369,7 +1364,7 @@ function setupMusic(el, appId) {
   async function playTrack(index) {
     const track = state.musicResults[index];
 
-    if (!track || !track.id) {
+    if (!track || !track.previewUrl) {
       return;
     }
 
@@ -1377,7 +1372,7 @@ function setupMusic(el, appId) {
     state.currentTrack = index;
 
     nowPlaying.textContent =
-      track.title || 'Unknown title';
+      track.trackName || 'Unknown title';
 
     statusEl.textContent = 'Loading...';
     playingIcon.textContent = '♪';
@@ -1385,90 +1380,22 @@ function setupMusic(el, appId) {
     playBtn.disabled = true;
 
     try {
-      const response = await fetch(
-        `${MUSIC_API.base}/fetch?id=${encodeURIComponent(track.id)}`
-      );
-
-      if (!response.ok) {
-        throw new Error(`Fetch failed: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      const streamUrl = data.response;
+      const streamUrl = track.previewUrl;
 
       if (!streamUrl) {
-        throw new Error('No stream URL returned');
+        throw new Error('No preview URL returned');
       }
 
-      /*
-       * Destroy previous HLS instance.
-       */
-      if (hls) {
-        hls.destroy();
-        hls = null;
-      }
+      audio.src = streamUrl;
 
-      /*
-       * HLS (.m3u8)
-       */
-      if (streamUrl.includes('.m3u8')) {
+      await audio.play();
 
-        if (window.Hls && Hls.isSupported()) {
-          hls = new Hls();
+      state.musicPlaying = true;
 
-          hls.loadSource(streamUrl);
-          hls.attachMedia(audio);
-
-          hls.on(Hls.Events.MANIFEST_PARSED, async () => {
-            await audio.play();
-
-            state.musicPlaying = true;
-
-            statusEl.textContent = 'Playing';
-            playingIcon.textContent = '♫';
-            playBtn.textContent = 'Pause';
-            playBtn.disabled = false;
-          });
-
-        } else if (
-          audio.canPlayType('application/vnd.apple.mpegurl')
-        ) {
-          /*
-           * Safari/native HLS.
-           */
-          audio.src = streamUrl;
-
-          await audio.play();
-
-          state.musicPlaying = true;
-
-          statusEl.textContent = 'Playing';
-          playingIcon.textContent = '♫';
-          playBtn.textContent = 'Pause';
-          playBtn.disabled = false;
-
-        } else {
-          throw new Error(
-            'This browser does not support HLS streams.'
-          );
-        }
-
-      } else {
-        /*
-         * Normal MP3 / MP4 stream.
-         */
-        audio.src = streamUrl;
-
-        await audio.play();
-
-        state.musicPlaying = true;
-
-        statusEl.textContent = 'Playing';
-        playingIcon.textContent = '♫';
-        playBtn.textContent = 'Pause';
-        playBtn.disabled = false;
-      }
+      statusEl.textContent = 'Playing';
+      playingIcon.textContent = '♫';
+      playBtn.textContent = 'Pause';
+      playBtn.disabled = false;
 
       el.querySelectorAll('.music-track')
         .forEach(item => item.classList.remove('playing'));
@@ -1499,7 +1426,7 @@ function setupMusic(el, appId) {
   });
 
   playBtn.addEventListener('click', async () => {
-    if (!audio.src && !hls) {
+    if (!audio.src) {
       if (currentIndex !== null) {
         await playTrack(currentIndex);
       }
@@ -1529,11 +1456,6 @@ function setupMusic(el, appId) {
   });
 
   return () => {
-    if (hls) {
-      hls.destroy();
-      hls = null;
-    }
-
     audio.pause();
     audio.src = '';
 
