@@ -1,29 +1,26 @@
-/* ============================================
-   THEME VARIABLES
-   ============================================ */
-  :root,
-  [data-theme="midnight"] {
-    --bg: #0d0d14;
-    --glass: rgba(20, 20, 35, 0.78);
-    --glass-header: rgba(255, 255, 255, 0.08);
-    --border: rgba(255, 255, 255, 0.12);
-    --text: #e8e8f0;
-    --text-secondary: #b8b8cc;
-    --muted: #888899;
-    --accent: #7c6dfa;
-    --accent-glow: rgba(124, 109, 250, 0.25);
-    --red: #f05d5d;
-    --tag-bg: rgba(124, 109, 250, 0.15);
-    --tag-border: rgba(124, 109, 250, 0.3);
-    --taskbar: rgba(10, 10, 20, 0.65);
-    --scrollbar: rgba(255, 255, 255, 0.12);
-    --shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--border);
-    --font-sans: 'Space Grotesk', system-ui, sans-serif;
-    --font-mono: 'Space Mono', monospace;
-    --radius: 14px;
-    --radius-sm: 8px;
-    --radius-full: 9999px;
-  }
+:root,
+[data-theme="midnight"] {
+  --bg: #0d0d14;
+  --glass: rgba(20, 20, 35, 0.78);
+  --glass-header: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.12);
+  --text: #e8e8f0;
+  --text-secondary: #b8b8cc;
+  --muted: #888899;
+  --accent: #7c6dfa;
+  --accent-glow: rgba(124, 109, 250, 0.25);
+  --red: #f05d5d;
+  --tag-bg: rgba(124, 109, 250, 0.15);
+  --tag-border: rgba(124, 109, 250, 0.3);
+  --taskbar: rgba(10, 10, 20, 0.65);
+  --scrollbar: rgba(255, 255, 255, 0.12);
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--border);
+  --font-sans: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --radius-full: 9999px;
+}
 
 [data-theme="ocean"] {
   --bg: #0a1628;
@@ -127,9 +124,6 @@
   --scrollbar: rgba(255, 0, 255, 0.2);
 }
 
-/* ============================================
-   BASE / RESET
-   ============================================ */
 *,
 *::before,
 *::after {
@@ -152,9 +146,6 @@ body {
   user-select: none;
 }
 
-/* ============================================
-   BOOT SCREEN
-   ============================================ */
 #boot-screen {
   position: fixed;
   inset: 0;
@@ -186,41 +177,33 @@ body {
 }
 
 @keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
-/* ============================================
-   DESKTOP
-   ============================================ */
 #desktop {
   position: fixed;
   inset: 0;
   z-index: 1;
 }
 
-  #windows-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-  }
+#windows-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
 
-  #desktop-icons {
-    position: fixed;
-    top: 16px;
-    left: 16px;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    gap: 12px;
-    max-height: calc(100vh - 80px);
-    z-index: 2;
-  }
+#desktop-icons {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-height: calc(100vh - 80px);
+  z-index: 2;
+}
 
 .icon {
   display: flex;
@@ -269,9 +252,6 @@ body {
   word-break: break-word;
 }
 
-/* ============================================
-   WINDOWS
-   ============================================ */
 .window {
   position: absolute;
   z-index: 100;
@@ -303,25 +283,13 @@ body {
 }
 
 @keyframes windowOpen {
-  from {
-    opacity: 0;
-    transform: scale(0.96) translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 @keyframes windowClose {
-  from {
-    opacity: 1;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.95);
-  }
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.95); }
 }
 
 .window.closing {
@@ -374,17 +342,9 @@ body {
   filter: brightness(1.25);
 }
 
-.control-btn.close {
-  background-color: var(--red);
-}
-
-.control-btn.minimize {
-  background-color: #fbbf24;
-}
-
-.control-btn.maximize {
-  background-color: #4ade80;
-}
+.control-btn.close { background-color: var(--red); }
+.control-btn.minimize { background-color: #fbbf24; }
+.control-btn.maximize { background-color: #4ade80; }
 
 .window-body {
   padding: 20px 22px;
@@ -393,7 +353,6 @@ body {
   flex: 1;
 }
 
-/* Resize handle */
 .window-resize-handle {
   position: absolute;
   right: 0;
@@ -416,9 +375,6 @@ body {
   opacity: 0.5;
 }
 
-/* ============================================
-   TASKBAR
-   ============================================ */
 #taskbar {
   position: fixed;
   bottom: 0;
@@ -448,13 +404,8 @@ body {
   transition: opacity 0.15s, transform 0.1s;
 }
 
-#start-btn:hover {
-  opacity: 0.9;
-}
-
-#start-btn:active {
-  transform: scale(0.96);
-}
+#start-btn:hover { opacity: 0.9; }
+#start-btn:active { transform: scale(0.96); }
 
 #taskbar-apps {
   flex: 1;
@@ -510,13 +461,8 @@ body {
   font-family: var(--font-mono);
 }
 
-#clock {
-  cursor: default;
-}
+#clock { cursor: default; }
 
-/* ============================================
-   START MENU
-   ============================================ */
 #start-menu {
   position: fixed;
   bottom: 56px;
@@ -535,9 +481,7 @@ body {
   overflow: hidden;
 }
 
-#start-menu.open {
-  display: flex;
-}
+#start-menu.open { display: flex; }
 
 #start-menu-header {
   padding: 16px;
@@ -578,9 +522,7 @@ body {
   width: calc(100% - 32px);
 }
 
-#start-menu-search::placeholder {
-  color: var(--muted);
-}
+#start-menu-search::placeholder { color: var(--muted); }
 
 #start-menu-apps {
   flex: 1;
@@ -644,13 +586,8 @@ body {
   transition: color 0.15s;
 }
 
-#start-menu-footer button:hover {
-  color: var(--text);
-}
+#start-menu-footer button:hover { color: var(--text); }
 
-/* ============================================
-   CONTEXT MENU
-   ============================================ */
 #context-menu {
   position: fixed;
   z-index: 10001;
@@ -666,9 +603,7 @@ body {
   padding: 4px;
 }
 
-#context-menu.open {
-  display: flex;
-}
+#context-menu.open { display: flex; }
 
 .ctx-item {
   padding: 8px 14px;
@@ -691,9 +626,6 @@ body {
   margin: 4px 8px;
 }
 
-/* ============================================
-   NOTIFICATIONS
-   ============================================ */
 #notification-area {
   position: fixed;
   top: 16px;
@@ -725,25 +657,13 @@ body {
 }
 
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes slideOut {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(20px);
-  }
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(20px); }
 }
 
 .notification-title {
@@ -757,9 +677,6 @@ body {
   color: var(--muted);
 }
 
-/* ============================================
-   SCROLLBAR
-   ============================================ */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -774,12 +691,7 @@ body {
   border-radius: 3px;
 }
 
-/* ============================================
-   UTILITIES
-   ============================================ */
-.hidden {
-  display: none !important;
-}
+.hidden { display: none !important; }
 
 .flex-center {
   display: flex;
@@ -787,23 +699,10 @@ body {
   justify-content: center;
 }
 
-.text-accent {
-  color: var(--accent);
-}
+.text-accent { color: var(--accent); }
+.bg-glass { background: var(--glass); }
+.border-custom { border-color: var(--border); }
 
-.bg-glass {
-  background: var(--glass);
-}
-
-.border-custom {
-  border-color: var(--border);
-}
-
-/* ============================================
-   APP-SPECIFIC STYLES
-   ============================================ */
-
-/* Profile Pic */
 .profile-pic {
   width: 64px;
   height: 64px;
@@ -814,7 +713,6 @@ body {
   margin-bottom: 14px;
 }
 
-/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -841,16 +739,13 @@ body {
   border-color: var(--accent);
 }
 
-.btn-primary:hover {
-  opacity: 0.9;
-}
+.btn-primary:hover { opacity: 0.9; }
 
 .btn-sm {
   padding: 4px 10px;
   font-size: 11px;
 }
 
-/* Inputs */
 .input {
   width: 100%;
   padding: 8px 12px;
@@ -863,11 +758,8 @@ body {
   transition: border-color 0.15s;
 }
 
-.input:focus {
-  border-color: var(--accent);
-}
+.input:focus { border-color: var(--accent); }
 
-/* Cards */
 .card {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border);
@@ -880,7 +772,6 @@ body {
   background: rgba(255, 255, 255, 0.06);
 }
 
-/* Tags */
 .tag {
   display: inline-flex;
   padding: 4px 12px;
@@ -892,7 +783,6 @@ body {
   border-radius: var(--radius-full, 9999px);
 }
 
-/* Section headings */
 .section-heading {
   font-size: 13px;
   font-weight: 700;
@@ -903,7 +793,6 @@ body {
   font-family: var(--font-mono);
 }
 
-/* Terminal */
 .terminal-output {
   font-family: var(--font-mono);
   font-size: 13px;
@@ -935,7 +824,6 @@ body {
   outline: none;
 }
 
-/* Calculator */
 .calc-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -987,7 +875,6 @@ body {
   border-color: var(--accent);
 }
 
-/* Notes */
 .notes-layout {
   display: flex;
   flex-direction: row;
@@ -1069,7 +956,6 @@ body {
   color: var(--text-secondary);
 }
 
-/* Music Player */
 .music-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -1120,7 +1006,6 @@ body {
   color: var(--muted);
 }
 
-/* Weather */
 .weather-card {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border);
@@ -1135,7 +1020,6 @@ body {
   color: var(--accent);
 }
 
-/* Calendar */
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -1177,7 +1061,6 @@ body {
   opacity: 0.4;
 }
 
-/* Tasks */
 .task-item {
   display: flex;
   align-items: center;
@@ -1239,11 +1122,8 @@ body {
   transition: color 0.15s;
 }
 
-.task-delete:hover {
-  color: var(--red);
-}
+.task-delete:hover { color: var(--red); }
 
-/* Settings */
 .settings-section {
   margin-bottom: 20px;
 }
@@ -1272,9 +1152,7 @@ body {
   transition: all 0.15s;
 }
 
-.theme-option:hover {
-  border-color: var(--muted);
-}
+.theme-option:hover { border-color: var(--muted); }
 
 .theme-option.active {
   border-color: var(--accent);
@@ -1286,14 +1164,12 @@ body {
   height: 40px;
   overflow: hidden;
   border-radius: 12px;
-
-
 }
 
 .theme-preview-svg {
-    display: block;
-    width: 100%;
-    height: auto;
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .theme-name {
@@ -1301,7 +1177,6 @@ body {
   font-weight: 600;
 }
 
-/* Wallpaper grid */
 .wallpaper-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1318,21 +1193,12 @@ body {
   transition: border-color 0.15s;
 }
 
-.wallpaper-option:hover {
-  border-color: var(--muted);
-}
+.wallpaper-option:hover { border-color: var(--muted); }
 
-.wallpaper-option.active {
-  border-color: var(--accent);
-}
+.wallpaper-option.active { border-color: var(--accent); }
 
-/* ============================================
-   ANIMATIONS
-   ============================================ */
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
 .animate-spin {
@@ -1340,23 +1206,14 @@ body {
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .fade-in {
   animation: fadeIn 0.3s ease-out;
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
 @media (max-width: 640px) {
   .window {
     min-width: 280px;

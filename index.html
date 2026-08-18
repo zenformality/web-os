@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ZI OS</title>
-
-  <!-- Tailwind CSS CDN  -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -19,8 +17,6 @@
       }
     }
   </script>
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
@@ -28,21 +24,16 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Boot Screen -->
   <div id="boot-screen">
     <div id="boot-logo">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:64px;height:64px;"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
     </div>
     <div id="boot-text">Initializing system...</div>
   </div>
-
-  <!-- Desktop -->
   <div id="desktop">
     <div id="desktop-icons"></div>
     <div id="windows-container"></div>
   </div>
-
-  <!-- Start Menu -->
   <div id="start-menu">
     <div id="start-menu-header">
       <img src="https://avatars.githubusercontent.com/u/583231?v=4" alt="Avatar" id="start-menu-avatar" />
@@ -64,8 +55,6 @@
       </button>
     </div>
   </div>
-
-  <!-- Taskbar -->
   <div id="taskbar">
     <button id="start-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
@@ -76,8 +65,6 @@
       <span id="clock">--:-- --</span>
     </div>
   </div>
-
-  <!-- Context Menu -->
   <div id="context-menu">
     <div class="ctx-item" data-action="refresh">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:6px;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
@@ -97,10 +84,7 @@
       About
     </div>
   </div>
-
-  <!-- Notification Area -->
   <div id="notification-area"></div>
-
   <script src="script.js"></script>
 </body>
 </html>
