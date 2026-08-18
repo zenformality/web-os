@@ -17,15 +17,25 @@ const themeColors = {
   matrix: ['#001a00', '#00ff00'],
 };
 
+const iconBase = 'https://unpkg.com/lucide-static@latest/icons/';
 const icons = {
-  welcome: 'zap', about: 'user', projects: 'rocket', notes: 'file-text',
-  terminal: 'terminal', calculator: 'calculator', settings: 'settings',
-  browser: 'globe', music: 'music', weather: 'cloud', calendar: 'calendar',
-  tasks: 'clipboard-check'
+  welcome: iconBase + 'zap.svg',
+  about: iconBase + 'user.svg',
+  projects: iconBase + 'rocket.svg',
+  notes: iconBase + 'file-text.svg',
+  terminal: iconBase + 'terminal.svg',
+  calculator: iconBase + 'calculator.svg',
+  settings: iconBase + 'settings.svg',
+  browser: iconBase + 'globe.svg',
+  music: iconBase + 'music.svg',
+  weather: iconBase + 'cloud.svg',
+  calendar: iconBase + 'calendar.svg',
+  tasks: iconBase + 'clipboard-check.svg'
 };
 
-function icon(name) {
-  return '<i class="icon-' + name + '"></i>';
+function icon(src) {
+  const url = src.startsWith('http') ? src : iconBase + src + '.svg';
+  return '<img src="' + url + '" class="app-icon" draggable="false">';
 }
 
 const APPS = {
@@ -828,7 +838,7 @@ function renderDesktopIcons() {
     const el = document.createElement('div');
     el.className = 'icon';
     el.dataset.app = appId;
-    el.innerHTML = '<i class="icon-' + app.icon + '"></i><span class="icon-label">' + esc(app.title) + '</span>';
+    el.innerHTML = icon(app.icon) + '<span class="icon-label">' + esc(app.title) + '</span>';
     el.addEventListener('click', () => wm.open(appId));
     c.appendChild(el);
   });

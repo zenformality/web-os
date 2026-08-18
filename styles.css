@@ -136,10 +136,11 @@ html, body {
 .icon.selected {
   background: var(--accent);
 }
-.icon i {
-  font-size: 18px;
+.icon .app-icon {
   width: 18px;
-  text-align: center;
+  height: 18px;
+  object-fit: contain;
+  filter: invert(1) brightness(2);
 }
 .icon-label {
   font-size: 12px;
@@ -281,8 +282,11 @@ html, body {
   background: var(--accent);
   color: #fff;
 }
-.taskbar-item i {
-  font-size: 12px;
+.taskbar-item .app-icon {
+  width: 12px;
+  height: 12px;
+  object-fit: contain;
+  filter: invert(1) brightness(2);
 }
 #system-tray {
   font-size: 12px;
@@ -360,8 +364,11 @@ html, body {
 .start-app-item:hover {
   background: var(--surface2);
 }
-.start-app-item i {
-  font-size: 20px;
+.start-app-item .app-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: invert(1) brightness(2);
 }
 .start-app-name {
   font-size: 10px;
@@ -776,8 +783,7 @@ html, body {
   margin-bottom: 8px;
 }
 
-i[class^="icon-"] {
-  font-style: normal;
+.app-icon {
   vertical-align: middle;
 }
 
