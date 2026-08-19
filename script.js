@@ -63,10 +63,7 @@ var state = {
   terminalHistory: [],
   terminalHistoryIdx: -1,
   tasks: JSON.parse(localStorage.getItem('web-os-tasks') || '[{"id":1,"text":"Build web OS","done":true},{"id":2,"text":"Add more themes","done":true},{"id":3,"text":"Add terminal app","done":false},{"id":4,"text":"Write documentation","done":false}]'),
-  musicPlaying: false,
   currentTrack: null,
-  musicResults: null,
-  musicAudio: null,
   calendarDate: new Date(),
   selectedDay: null,
 };
@@ -346,14 +343,12 @@ function hideCtx() { $('context-menu').classList.remove('open') }
 
 function renderWelcome() {
   return '<div style="text-align:center;">' +
-    '<img src="https://avatars.githubusercontent.com/u/583231?v=4" style="width:60px;height:60px;border:2px solid var(--accent);margin-bottom:12px;" alt="avatar">' +
-    '<h1 style="font-size:20px;font-weight:bold;margin-bottom:4px;">Hey, I\'m <span style="color:var(--accent)">ZI</span></h1>' +
-    '<p style="font-size:12px;color:var(--text2);margin-bottom:12px;">Developer * Designer * Explorer</p>' +
-    '<p style="font-size:12px;color:var(--text2);margin-bottom:16px;">Welcome to my corner of the internet. Built like an OS because why not.</p>' +
+    '<div style="font-size:48px;font-weight:bold;color:var(--accent);margin-bottom:8px;">ZI</div>' +
+    '<p style="font-size:12px;color:var(--text2);margin-bottom:4px;">ZI OS v1.0</p>' +
+    '<p style="font-size:11px;color:var(--text2);margin-bottom:16px;">A web operating system built with vanilla JS.</p>' +
     '<div style="display:flex;gap:6px;justify-content:center;">' +
-      '<a href="https://github.com/" target="_blank" class="btn btn-primary">GitHub</a>' +
-      '<a href="https://linkedin.com/" target="_blank" class="btn">LinkedIn</a>' +
-      '<a href="mailto:hello@example.com" class="btn">Email</a>' +
+      '<button class="btn btn-primary" onclick="wm.open(\'projects\')">Projects</button>' +
+      '<button class="btn" onclick="wm.open(\'about\')">About</button>' +
     '</div>' +
   '</div>';
 }
@@ -651,7 +646,7 @@ function setupBrowser(el) {
     var val = urlInput.value.trim();
     if (!val) return;
     if (/^https?:\/\//i.test(val)) frame.src = val;
-    else frame.src = 'https://www.google.com/search?q=' + encodeURIComponent(val);
+    else frame.src = 'https://duckduckgo.com/?q=' + encodeURIComponent(val);
   }
   el.querySelector('#browser-go').addEventListener('click', navigate);
   urlInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') navigate() });
@@ -688,7 +683,7 @@ function setupMusic(el, appId) {
   var statusEl = el.querySelector('#music-status');
   var audio = el.querySelector('#music-audio');
   var currentIdx = null;
-  state.musicAudio = audio;
+  var musicResults = null;
 
   async function searchMusic() {
     var q = searchInput.value.trim();
@@ -696,14 +691,15 @@ function setupMusic(el, appId) {
     searchStatus.textContent = 'Searching...';
     searchBtn.disabled = true;
     try {
-      var res = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(q) + '&media=music&limit=15');
+      var url = 'https://itunes.apple.com/search?term=' + encodeURIComponent(q) + '&media=music&limit=15';
+      var res = await fetch(url);
       var data = await res.json();
       if (!data.results || data.results.length === 0) {
         resultsEl.innerHTML = '<span style="font-size:11px;color:var(--text2);">No results.</span>';
         searchStatus.textContent = 'No results.';
         return;
       }
-      state.musicResults = data.results;
+      musicResults = data.results;
       resultsEl.innerHTML = data.results.map(function(t, i) {
         var img = t.artworkUrl100 || '';
         return '<div class="music-track" data-track="' + i + '" style="padding:6px;background:var(--surface2);border:1px solid var(--border);margin-bottom:4px;cursor:pointer;display:flex;align-items:center;gap:8px;">' +
@@ -723,7 +719,7 @@ function setupMusic(el, appId) {
   }
 
   async function playTrack(index) {
-    var track = state.musicResults[index];
+    var track = musicResults[index];
     if (!track || !track.previewUrl) return;
     currentIdx = index;
     nowPlaying.textContent = track.trackName || 'Unknown';
@@ -732,7 +728,6 @@ function setupMusic(el, appId) {
     try {
       audio.src = track.previewUrl;
       await audio.play();
-      state.musicPlaying = true;
       statusEl.textContent = 'Playing';
       playBtn.textContent = 'Pause';
       playBtn.disabled = false;
@@ -753,7 +748,7 @@ function setupMusic(el, appId) {
     else { audio.pause(); statusEl.textContent = 'Paused'; playBtn.textContent = 'Play' }
   });
   audio.addEventListener('ended', function() { statusEl.textContent = 'Ended'; playBtn.textContent = 'Play' });
-  return function() { audio.pause(); audio.src = ''; state.musicAudio = null };
+  return function() { audio.pause(); audio.src = '' };
 }
 
 function renderWeather() {
