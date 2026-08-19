@@ -68,6 +68,7 @@ var state = {
   musicResults: null,
   musicAudio: null,
   calendarDate: new Date(),
+  selectedDay: null,
 };
 
 function $(id) { return document.getElementById(id); }
@@ -289,7 +290,7 @@ setInterval(updateClock, 1000);
 function boot() {
   applyTheme(state.theme);
   if (state.wallpaper) setWallpaper(state.wallpaper);
-  var msgs = ['Initializing...', 'Loading modules...', 'Starting window manager...', 'Loading apps...', 'Welcome to ZI OS'];
+  var msgs = ['breathing in...', 'exhaling...', 'loading thoughts...', 'finding stillness...', 'ZI is ready'];
   var i = 0;
   var interval = setInterval(function() {
     if (i < msgs.length) { $('boot-text').textContent = msgs[i]; i++; }
@@ -297,28 +298,41 @@ function boot() {
       clearInterval(interval);
       setTimeout(function() {
         $('boot-screen').classList.add('fade-out');
-        setTimeout(function() { $('boot-screen').remove() }, 500);
+        setTimeout(function() { $('boot-screen').remove() }, 800);
         notify('Welcome back!', 'Click desktop icons or use Start.');
       }, 300);
     }
-  }, 250);
+  }, 350);
 }
 
 function toggleStartMenu() {
   var m = $('start-menu');
   m.classList.toggle('open');
-  if (m.classList.contains('open')) $('start-menu-search').focus();
+  if (m.classList.contains('open')) {
+    $('start-menu-search').value = '';
+    filterStartMenu('');
+    $('start-menu-search').focus();
+  }
 }
 
-function renderStartMenu() {
+function filterStartMenu(query) {
   var c = $('start-menu-apps');
   c.innerHTML = '';
+  var q = query.toLowerCase().trim();
   Object.values(APPS).forEach(function(app) {
+    if (q && app.title.toLowerCase().indexOf(q) === -1) return;
     var item = document.createElement('div');
     item.className = 'start-app-item';
     item.innerHTML = icon(app.icon) + '<div class="start-app-name">' + esc(app.title) + '</div>';
     item.addEventListener('click', function() { wm.open(app.id); $('start-menu').classList.remove('open') });
     c.appendChild(item);
+  });
+}
+
+function renderStartMenu() {
+  filterStartMenu('');
+  $('start-menu-search').addEventListener('input', function(e) {
+    filterStartMenu(e.target.value);
   });
 }
 
@@ -421,6 +435,37 @@ function setupTerminal(el, appId) {
   print('ZI OS Terminal v1.0.0');
   print('Type "help" for commands.\n');
 
+  var cmds = {
+    help: function() { print('Commands: help, echo, clear, date, whoami, ls, cat, calc, theme, exit') },
+    echo: function(a) { print(a.join(' ')) },
+    clear: function() { output.innerHTML = '' },
+    date: function() { print(new Date().toString()) },
+    whoami: function() { print('visitor') },
+    ls: function() { print('Desktop/  Documents/  Downloads/  notes.txt  readme.md') },
+    cat: function(a) {
+      var f = a[0] || '';
+      if (f === 'notes.txt') print('Welcome to my OS!');
+      else if (f === 'readme.md') print('# web-os\nA portfolio styled like an OS.');
+      else print('cat: ' + esc(f) + ': No such file');
+    },
+    calc: function(a) {
+      var expr = a.join(' ');
+      if (!expr || /[+\-*/]$/.test(expr) || expr.split('(').length !== expr.split(')').length) {
+        print('Invalid expression'); return;
+      }
+      try {
+        var r = Function('"use strict"; return (' + expr + ')')();
+        print('= ' + r);
+      } catch (e) { print('Error: ' + e.message) }
+    },
+    theme: function(a) {
+      var t = a[0];
+      if (t && themes[t]) { applyTheme(t); print('Theme: ' + themes[t]) }
+      else print('Themes: ' + Object.keys(themes).join(', '));
+    },
+    exit: function() { wm.close('terminal') }
+  };
+
   function execute(raw) {
     var cmd = raw.trim();
     if (!cmd) return;
@@ -430,38 +475,8 @@ function setupTerminal(el, appId) {
     var parts = cmd.split(' ');
     var c = parts[0].toLowerCase();
     var args = parts.slice(1);
-
-    switch (c) {
-      case 'help':
-        print('Commands: help, echo, clear, date, whoami, ls, cat, calc, theme, exit');
-        break;
-      case 'echo': print(args.join(' ')); break;
-      case 'clear': output.innerHTML = ''; break;
-      case 'date': print(new Date().toString()); break;
-      case 'whoami': print('visitor'); break;
-      case 'ls': print('Desktop/  Documents/  Downloads/  notes.txt  readme.md'); break;
-      case 'cat': {
-        var f = args[0] || '';
-        if (f === 'notes.txt') print('Welcome to my OS!');
-        else if (f === 'readme.md') print('# web-os\nA portfolio styled like an OS.');
-        else print('cat: ' + esc(f) + ': No such file');
-        break;
-      }
-      case 'calc':
-        try {
-          var r = Function('"use strict"; return (' + args.join(' ') + ')')();
-          print('= ' + r);
-        } catch (e) { print('Error: ' + e.message) }
-        break;
-      case 'theme': {
-        var t = args[0];
-        if (t && themes[t]) { applyTheme(t); print('Theme: ' + themes[t]) }
-        else print('Themes: ' + Object.keys(themes).join(', '));
-        break;
-      }
-      case 'exit': wm.close('terminal'); break;
-      default: print('Unknown command: ' + esc(c));
-    }
+    if (cmds[c]) cmds[c](args);
+    else print('Unknown command: ' + esc(c));
   }
 
   input.addEventListener('keydown', function(e) {
@@ -681,7 +696,7 @@ function setupMusic(el, appId) {
     searchStatus.textContent = 'Searching...';
     searchBtn.disabled = true;
     try {
-      var res = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(q) + '&entity=song&limit=20&country=US');
+      var res = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(q) + '&media=music&limit=15');
       var data = await res.json();
       if (!data.results || data.results.length === 0) {
         resultsEl.innerHTML = '<span style="font-size:11px;color:var(--text2);">No results.</span>';
@@ -690,7 +705,7 @@ function setupMusic(el, appId) {
       }
       state.musicResults = data.results;
       resultsEl.innerHTML = data.results.map(function(t, i) {
-        var img = (t.artworkUrl100 || '').replace('100x100', '300x300');
+        var img = t.artworkUrl100 || '';
         return '<div class="music-track" data-track="' + i + '" style="padding:6px;background:var(--surface2);border:1px solid var(--border);margin-bottom:4px;cursor:pointer;display:flex;align-items:center;gap:8px;">' +
           (img ? '<img src="' + esc(img) + '" style="width:40px;height:40px;" loading="lazy" onerror="this.style.display=\'none\'">' : '') +
           '<div style="flex:1;min-width:0;"><div style="font-size:11px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(t.trackName || 'Unknown') + '</div>' +
@@ -773,12 +788,14 @@ function renderCalendar() {
       '<button id="cal-next" class="btn">&gt;</button>' +
     '</div>' +
     '<div class="calendar-grid" id="cal-grid"></div>' +
+    '<div id="cal-selected" style="font-size:11px;color:var(--text2);margin-top:8px;text-align:center;min-height:16px;"></div>' +
   '</div>';
 }
 
 function setupCalendar(el) {
   var grid = el.querySelector('#cal-grid');
   var monthYear = el.querySelector('#cal-month-year');
+  var selectedEl = el.querySelector('#cal-selected');
   var date = state.calendarDate;
 
   function render() {
@@ -788,14 +805,33 @@ function setupCalendar(el) {
     monthYear.textContent = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     var html = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d) { return '<div class="calendar-header">' + d + '</div>' }).join('');
     var prevLast = new Date(year, month, 0).getDate();
-    for (var i = firstDay - 1; i >= 0; i--) html += '<div class="calendar-day other-month">' + (prevLast - i) + '</div>';
+    for (var i = firstDay - 1; i >= 0; i--) {
+      html += '<div class="calendar-day other-month" data-day="' + (prevLast - i) + '" data-month="' + (month - 1) + '" data-year="' + year + '">' + (prevLast - i) + '</div>';
+    }
     var today = new Date();
     for (var d = 1; d <= daysInMonth; d++) {
       var isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-      html += '<div class="calendar-day' + (isToday ? ' today' : '') + '">' + d + '</div>';
+      var isSelected = state.selectedDay && state.selectedDay.day === d && state.selectedDay.month === month && state.selectedDay.year === year;
+      html += '<div class="calendar-day' + (isToday ? ' today' : '') + (isSelected ? ' selected-day' : '') + '" data-day="' + d + '" data-month="' + month + '" data-year="' + year + '">' + d + '</div>';
     }
-    for (var d = 1; d <= 42 - (firstDay + daysInMonth); d++) html += '<div class="calendar-day other-month">' + d + '</div>';
+    var nextMonth = month + 1 > 11 ? 0 : month + 1;
+    var nextYear = month + 1 > 11 ? year + 1 : year;
+    for (var d = 1; d <= 42 - (firstDay + daysInMonth); d++) {
+      html += '<div class="calendar-day other-month" data-day="' + d + '" data-month="' + nextMonth + '" data-year="' + nextYear + '">' + d + '</div>';
+    }
     grid.innerHTML = html;
+
+    grid.querySelectorAll('.calendar-day').forEach(function(dayEl) {
+      dayEl.addEventListener('click', function() {
+        var day = parseInt(dayEl.dataset.day);
+        var m = parseInt(dayEl.dataset.month);
+        var y = parseInt(dayEl.dataset.year);
+        state.selectedDay = { day: day, month: m, year: y };
+        var d = new Date(y, m, day);
+        selectedEl.textContent = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        render();
+      });
+    });
   }
 
   el.querySelector('#cal-prev').addEventListener('click', function() { date.setMonth(date.getMonth() - 1); render() });
