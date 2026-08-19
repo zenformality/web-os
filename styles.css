@@ -11,7 +11,6 @@
   --yellow: #da5;
   --green: #5c5;
 }
-
 [data-theme="light"] {
   --bg: #e8e8e8;
   --surface: #fff;
@@ -24,7 +23,6 @@
   --yellow: #da2;
   --green: #4a4;
 }
-
 [data-theme="ocean"] {
   --bg: #0a1628;
   --surface: #122040;
@@ -37,7 +35,6 @@
   --yellow: #da5;
   --green: #5c5;
 }
-
 [data-theme="matrix"] {
   --bg: #000;
   --surface: #001a00;
@@ -56,7 +53,6 @@
   margin: 0;
   padding: 0;
 }
-
 html, body {
   width: 100%;
   height: 100%;
@@ -70,7 +66,6 @@ html, body {
   user-select: none;
 }
 
-/* boot screen */
 #boot-screen {
   position: fixed;
   inset: 0;
@@ -99,7 +94,6 @@ html, body {
   letter-spacing: 2px;
 }
 
-/* desktop */
 #desktop {
   position: fixed;
   inset: 0;
@@ -111,10 +105,9 @@ html, body {
   height: 100%;
 }
 
-/* desktop icons */
 #desktop-icons {
   position: fixed;
-  top: 12px;
+  top: 52px;
   left: 12px;
   display: flex;
   flex-direction: column;
@@ -125,30 +118,34 @@ html, body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 10px;
+  padding: 5px 8px;
   cursor: pointer;
-  width: 140px;
+  width: 130px;
   transition: background 0.1s;
+  border-radius: 4px;
 }
 .icon:hover {
-  background: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.06);
 }
 .icon.selected {
   background: var(--accent);
 }
 .icon .app-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   object-fit: contain;
+}
+[data-theme="midnight"] .icon .app-icon,
+[data-theme="ocean"] .icon .app-icon,
+[data-theme="matrix"] .icon .app-icon {
   filter: invert(1) brightness(2);
 }
 .icon-label {
-  font-size: 12px;
-  color: var(--text);
+  font-size: 11px;
+  color: var(--text2);
   text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
-/* windows */
 .window {
   position: absolute;
   z-index: 100;
@@ -158,8 +155,14 @@ html, body {
   max-width: 90vw;
   background: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: 4px 4px 20px rgba(0,0,0,0.5);
+  box-shadow: 2px 2px 12px rgba(0,0,0,0.4);
   overflow: hidden;
+  transition: box-shadow 0.15s;
+}
+.window.focused {
+  box-shadow: 4px 4px 24px rgba(0,0,0,0.6);
+  border-color: var(--accent);
+  border-left: 3px solid var(--accent);
 }
 .window.minimized {
   display: none !important;
@@ -175,7 +178,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 10px;
+  padding: 7px 10px;
   background: var(--surface2);
   border-bottom: 1px solid var(--border);
   cursor: grab;
@@ -184,39 +187,37 @@ html, body {
   cursor: grabbing;
 }
 .window-title {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text2);
   flex: 1;
   text-align: center;
 }
 .window-controls {
   display: flex;
-  gap: 6px;
+  gap: 5px;
   width: 50px;
   justify-content: flex-end;
 }
 .control-btn {
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
   border: 1px solid var(--border);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 9px;
   line-height: 1;
 }
 .control-btn.close { background: var(--red); }
 .control-btn.minimize { background: var(--yellow); }
 .control-btn.maximize { background: var(--green); }
-
 .window-body {
   padding: 16px;
   overflow-y: auto;
   max-height: 70vh;
   flex: 1;
 }
-
 .window-resize-handle {
   position: absolute;
   right: 0;
@@ -227,7 +228,6 @@ html, body {
   z-index: 10;
 }
 
-/* taskbar */
 #taskbar {
   position: fixed;
   bottom: 0;
@@ -286,6 +286,10 @@ html, body {
   width: 12px;
   height: 12px;
   object-fit: contain;
+}
+[data-theme="midnight"] .taskbar-item .app-icon,
+[data-theme="ocean"] .taskbar-item .app-icon,
+[data-theme="matrix"] .taskbar-item .app-icon {
   filter: invert(1) brightness(2);
 }
 #system-tray {
@@ -293,7 +297,6 @@ html, body {
   color: var(--text2);
 }
 
-/* start menu */
 #start-menu {
   position: fixed;
   bottom: 52px;
@@ -305,7 +308,7 @@ html, body {
   z-index: 10000;
   display: none;
   flex-direction: column;
-  box-shadow: 4px 4px 20px rgba(0,0,0,0.5);
+  box-shadow: 2px 2px 12px rgba(0,0,0,0.4);
 }
 #start-menu.open {
   display: flex;
@@ -368,6 +371,10 @@ html, body {
   width: 20px;
   height: 20px;
   object-fit: contain;
+}
+[data-theme="midnight"] .start-app-item .app-icon,
+[data-theme="ocean"] .start-app-item .app-icon,
+[data-theme="matrix"] .start-app-item .app-icon {
   filter: invert(1) brightness(2);
 }
 .start-app-name {
@@ -394,7 +401,6 @@ html, body {
   color: var(--text);
 }
 
-/* context menu */
 #context-menu {
   position: fixed;
   z-index: 10001;
@@ -404,7 +410,7 @@ html, body {
   display: none;
   flex-direction: column;
   padding: 4px 0;
-  box-shadow: 4px 4px 20px rgba(0,0,0,0.5);
+  box-shadow: 2px 2px 12px rgba(0,0,0,0.4);
 }
 #context-menu.open {
   display: flex;
@@ -423,7 +429,6 @@ html, body {
   margin: 2px 0;
 }
 
-/* notifications */
 #notification-area {
   position: fixed;
   top: 12px;
@@ -439,7 +444,7 @@ html, body {
   border: 1px solid var(--border);
   padding: 10px 14px;
   min-width: 200px;
-  box-shadow: 4px 4px 16px rgba(0,0,0,0.4);
+  box-shadow: 2px 2px 12px rgba(0,0,0,0.3);
   pointer-events: auto;
 }
 .notification.removing {
@@ -456,12 +461,10 @@ html, body {
   color: var(--text2);
 }
 
-/* scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); }
 
-/* utility */
 .btn {
   padding: 6px 12px;
   font-size: 12px;
@@ -506,7 +509,6 @@ html, body {
   margin-bottom: 8px;
 }
 
-/* terminal */
 .terminal-output {
   font-size: 12px;
   line-height: 1.6;
@@ -534,7 +536,6 @@ html, body {
   outline: none;
 }
 
-/* calculator */
 .calc-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -575,7 +576,6 @@ html, body {
   color: #fff;
 }
 
-/* notes */
 .notes-layout {
   display: flex;
   height: 360px;
@@ -631,7 +631,6 @@ html, body {
   color: var(--text2);
 }
 
-/* tasks */
 .task-item {
   display: flex;
   align-items: center;
@@ -675,7 +674,6 @@ html, body {
 }
 .task-delete:hover { color: var(--red); }
 
-/* settings */
 .settings-section { margin-bottom: 16px; }
 .settings-label {
   font-size: 11px;
@@ -729,7 +727,6 @@ html, body {
 .wallpaper-option:hover { border-color: var(--text2); }
 .wallpaper-option.active { border-color: var(--accent); }
 
-/* weather */
 .weather-card {
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -743,7 +740,6 @@ html, body {
   color: var(--accent);
 }
 
-/* calendar */
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -776,7 +772,6 @@ html, body {
   opacity: 0.3;
 }
 
-/* browser */
 .browser-bar {
   display: flex;
   gap: 4px;
@@ -787,7 +782,6 @@ html, body {
   vertical-align: middle;
 }
 
-/* responsive */
 @media (max-width: 640px) {
   .window { min-width: 260px; max-width: 95vw; }
   #start-menu { width: calc(100vw - 16px); left: 8px; }

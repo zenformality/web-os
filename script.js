@@ -1,8 +1,8 @@
-const themes = {
+var themes = {
   midnight: 'Midnight', light: 'Light', ocean: 'Ocean', matrix: 'Matrix'
 };
 
-const wallpapers = [
+var wallpapers = [
   'wallpapers/4k-black-hole-with-bright-horizon-kug5rf2bs46mxcur.webp',
   'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1920&q=80',
   'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1920&q=80',
@@ -10,15 +10,15 @@ const wallpapers = [
   'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=1920&q=80',
 ];
 
-const themeColors = {
+var themeColors = {
   midnight: ['#1a1a1a', '#7c6dfa'],
   light: ['#e8e8e8', '#6366f1'],
   ocean: ['#122040', '#3b9eff'],
   matrix: ['#001a00', '#00ff00'],
 };
 
-const iconBase = 'https://unpkg.com/lucide-static@latest/icons/';
-const icons = {
+var iconBase = 'https://unpkg.com/lucide-static@latest/icons/';
+var icons = {
   welcome: iconBase + 'zap.svg',
   about: iconBase + 'user.svg',
   projects: iconBase + 'rocket.svg',
@@ -34,7 +34,7 @@ const icons = {
 };
 
 function icon(src) {
-  const url = src.startsWith('http') ? src : iconBase + src + '.svg';
+  var url = src.startsWith('http') ? src : iconBase + src + '.svg';
   return '<img src="' + url + '" class="app-icon" draggable="false">';
 }
 
@@ -53,7 +53,7 @@ const APPS = {
   tasks:     { id: 'tasks',     title: 'Tasks',     icon: icons.tasks,     w: 380, h: 380, render: renderTasks,     setup: setupTasks },
 };
 
-const state = {
+var state = {
   windows: new Map(),
   topZ: 100,
   theme: localStorage.getItem('web-os-theme') || 'midnight',
@@ -73,7 +73,7 @@ const state = {
 function $(id) { return document.getElementById(id); }
 
 function esc(t) {
-  const d = document.createElement('div');
+  let d = document.createElement('div');
   d.textContent = t;
   return d.innerHTML;
 }
@@ -86,12 +86,12 @@ function save() {
 }
 
 function notify(title, body) {
-  const area = $('notification-area');
-  const n = document.createElement('div');
+  var area = $('notification-area');
+  var n = document.createElement('div');
   n.className = 'notification';
   n.innerHTML = '<div class="notification-title">' + esc(title) + '</div><div class="notification-body">' + esc(body) + '</div>';
   area.appendChild(n);
-  setTimeout(() => { n.classList.add('removing'); setTimeout(() => n.remove(), 300); }, 3000);
+  setTimeout(function() { n.classList.add('removing'); setTimeout(function() { n.remove() }, 300) }, 3000);
 }
 
 function applyTheme(name) {
@@ -109,7 +109,7 @@ function setWallpaper(url) {
 let dragState = null;
 let resizeState = null;
 
-document.addEventListener('mousemove', (e) => {
+document.addEventListener('mousemove', function(e) {
   if (dragState) {
     dragState.el.style.left = (dragState.startLeft + e.clientX - dragState.startX) + 'px';
     dragState.el.style.top = (dragState.startTop + e.clientY - dragState.startY) + 'px';
@@ -120,10 +120,9 @@ document.addEventListener('mousemove', (e) => {
   }
 });
 
-document.addEventListener('mouseup', () => { dragState = null; resizeState = null; });
+document.addEventListener('mouseup', function() { dragState = null; resizeState = null });
 
-// Window Manager
-const wm = {
+var wm = {
   container: null,
   taskbarApps: null,
   zCounter: 100,
@@ -135,15 +134,15 @@ const wm = {
   },
 
   open(appId) {
-    const app = APPS[appId];
+    var app = APPS[appId];
     if (!app) return;
-    const existing = state.windows.get(appId);
+    var existing = state.windows.get(appId);
     if (existing) {
       if (existing.el.classList.contains('minimized')) this.restore(appId);
       this.focus(appId);
       return;
     }
-    const el = document.createElement('div');
+    var el = document.createElement('div');
     el.className = 'window';
     el.id = 'win-' + appId;
     el.style.width = app.w + 'px';
@@ -164,34 +163,37 @@ const wm = {
       '<div class="window-body">' + app.render() + '</div>' +
       '<div class="window-resize-handle" data-app="' + appId + '"></div>';
     this.container.appendChild(el);
-    const winData = { id: appId, el, maximized: false, prevRect: null, cleanup: null };
+    var winData = { id: appId, el: el, maximized: false, prevRect: null, cleanup: null };
     state.windows.set(appId, winData);
     this.drag(el, appId);
     this.resize(el, appId);
     this.focus(appId);
     this.updateTaskbar();
     if (app.setup) winData.cleanup = app.setup(el, appId);
-    el.addEventListener('mousedown', () => this.focus(appId));
+    el.addEventListener('mousedown', function() { wm.focus(appId) });
   },
 
   close(appId) {
-    const d = state.windows.get(appId);
+    var d = state.windows.get(appId);
     if (!d) return;
     if (d.cleanup) d.cleanup();
     d.el.remove();
     state.windows.delete(appId);
+    if (this.activeWindow === appId) this.activeWindow = null;
     this.updateTaskbar();
   },
 
   minimize(appId) {
-    const d = state.windows.get(appId);
+    var d = state.windows.get(appId);
     if (!d) return;
     d.el.classList.add('minimized');
+    d.el.classList.remove('focused');
+    if (this.activeWindow === appId) this.activeWindow = null;
     this.updateTaskbar();
   },
 
   restore(appId) {
-    const d = state.windows.get(appId);
+    var d = state.windows.get(appId);
     if (!d) return;
     d.el.classList.remove('minimized');
     this.focus(appId);
@@ -199,7 +201,7 @@ const wm = {
   },
 
   toggleMax(appId) {
-    const d = state.windows.get(appId);
+    var d = state.windows.get(appId);
     if (!d) return;
     if (d.maximized) {
       d.el.classList.remove('maximized');
@@ -221,8 +223,13 @@ const wm = {
   },
 
   focus(appId) {
-    const d = state.windows.get(appId);
+    var d = state.windows.get(appId);
     if (!d) return;
+    if (this.activeWindow && this.activeWindow !== appId) {
+      var prev = state.windows.get(this.activeWindow);
+      if (prev) prev.el.classList.remove('focused');
+    }
+    d.el.classList.add('focused');
     d.el.style.zIndex = ++this.zCounter;
     this.activeWindow = appId;
     this.updateTaskbar();
@@ -230,103 +237,99 @@ const wm = {
 
   updateTaskbar() {
     this.taskbarApps.innerHTML = '';
-    state.windows.forEach((d, appId) => {
-      const app = APPS[appId];
+    var self = this;
+    state.windows.forEach(function(d, appId) {
+      var app = APPS[appId];
       if (!app) return;
-      const item = document.createElement('div');
-      item.className = 'taskbar-item' + (appId === this.activeWindow && !d.el.classList.contains('minimized') ? ' active' : '');
+      var item = document.createElement('div');
+      item.className = 'taskbar-item' + (appId === self.activeWindow && !d.el.classList.contains('minimized') ? ' active' : '');
       item.innerHTML = icon(app.icon) + ' ' + esc(app.title);
-      item.addEventListener('click', () => {
-        if (d.el.classList.contains('minimized')) this.restore(appId);
-        else if (this.activeWindow === appId) this.minimize(appId);
-        else this.focus(appId);
+      item.addEventListener('click', function() {
+        if (d.el.classList.contains('minimized')) self.restore(appId);
+        else if (self.activeWindow === appId) self.minimize(appId);
+        else self.focus(appId);
       });
-      this.taskbarApps.appendChild(item);
+      self.taskbarApps.appendChild(item);
     });
   },
 
   drag(el, appId) {
-    const header = el.querySelector('.window-header');
-    header.addEventListener('mousedown', (e) => {
+    var header = el.querySelector('.window-header');
+    header.addEventListener('mousedown', function(e) {
       if (e.target.closest('.control-btn')) return;
-      const d = state.windows.get(appId);
+      var d = state.windows.get(appId);
       if (d && d.maximized) return;
-      dragState = { el, startX: e.clientX, startY: e.clientY, startLeft: el.offsetLeft, startTop: el.offsetTop };
-      this.focus(appId);
+      dragState = { el: el, startX: e.clientX, startY: e.clientY, startLeft: el.offsetLeft, startTop: el.offsetTop };
+      wm.focus(appId);
       e.preventDefault();
     });
   },
 
   resize(el, appId) {
-    const handle = el.querySelector('.window-resize-handle');
-    handle.addEventListener('mousedown', (e) => {
-      const d = state.windows.get(appId);
+    var handle = el.querySelector('.window-resize-handle');
+    handle.addEventListener('mousedown', function(e) {
+      var d = state.windows.get(appId);
       if (d && d.maximized) return;
-      resizeState = { el, startX: e.clientX, startY: e.clientY, startW: el.offsetWidth, startH: el.offsetHeight };
-      this.focus(appId);
+      resizeState = { el: el, startX: e.clientX, startY: e.clientY, startW: el.offsetWidth, startH: el.offsetHeight };
+      wm.focus(appId);
       e.preventDefault();
       e.stopPropagation();
     });
   }
 };
 
-// Clock
 function updateClock() {
-  const now = new Date();
-  const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-  const date = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-  $('clock').textContent = date + ' ' + time;
+  var now = new Date();
+  var time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  var date = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  document.getElementById('clock').textContent = date + ' ' + time;
 }
 setInterval(updateClock, 1000);
 
-// Boot
 function boot() {
   applyTheme(state.theme);
   if (state.wallpaper) setWallpaper(state.wallpaper);
-  const msgs = ['Initializing...', 'Loading modules...', 'Starting window manager...', 'Loading apps...', 'Welcome to ZI OS'];
-  let i = 0;
-  const interval = setInterval(() => {
+  var msgs = ['Initializing...', 'Loading modules...', 'Starting window manager...', 'Loading apps...', 'Welcome to ZI OS'];
+  var i = 0;
+  var interval = setInterval(function() {
     if (i < msgs.length) { $('boot-text').textContent = msgs[i]; i++; }
     else {
       clearInterval(interval);
-      setTimeout(() => {
+      setTimeout(function() {
         $('boot-screen').classList.add('fade-out');
-        setTimeout(() => $('boot-screen').remove(), 500);
+        setTimeout(function() { $('boot-screen').remove() }, 500);
         notify('Welcome back!', 'Click desktop icons or use Start.');
       }, 300);
     }
   }, 250);
 }
 
-// Start menu
 function toggleStartMenu() {
-  const m = $('start-menu');
+  var m = $('start-menu');
   m.classList.toggle('open');
   if (m.classList.contains('open')) $('start-menu-search').focus();
 }
 
 function renderStartMenu() {
-  const c = $('start-menu-apps');
+  var c = $('start-menu-apps');
   c.innerHTML = '';
-  Object.values(APPS).forEach(app => {
-    const item = document.createElement('div');
+  Object.values(APPS).forEach(function(app) {
+    var item = document.createElement('div');
     item.className = 'start-app-item';
     item.innerHTML = icon(app.icon) + '<div class="start-app-name">' + esc(app.title) + '</div>';
-    item.addEventListener('click', () => { wm.open(app.id); $('start-menu').classList.remove('open'); });
+    item.addEventListener('click', function() { wm.open(app.id); $('start-menu').classList.remove('open') });
     c.appendChild(item);
   });
 }
 
-// Context menu
 function showCtx(x, y) {
-  const m = $('context-menu');
+  var m = $('context-menu');
   m.style.left = Math.min(x, window.innerWidth - 170) + 'px';
   m.style.top = Math.min(y, window.innerHeight - 120) + 'px';
   m.classList.add('open');
 }
-function hideCtx() { $('context-menu').classList.remove('open'); }
+function hideCtx() { $('context-menu').classList.remove('open') }
 
-// App renderers
 function renderWelcome() {
   return '<div style="text-align:center;">' +
     '<img src="https://avatars.githubusercontent.com/u/583231?v=4" style="width:60px;height:60px;border:2px solid var(--accent);margin-bottom:12px;" alt="avatar">' +
@@ -342,7 +345,7 @@ function renderWelcome() {
 }
 
 function renderAbout() {
-  const skills = ['HTML','CSS','JavaScript','Rust','Python','Svelte','TypeScript','Go','Node.js'];
+  var skills = ['HTML','CSS','JavaScript','Rust','Python','Svelte','TypeScript','Go','Node.js'];
   return '<div>' +
     '<h2 class="section-heading">About Me</h2>' +
     '<p style="font-size:12px;color:var(--text2);margin-bottom:12px;">I\'m a developer who likes building things that feel alive. This web OS is my playground.</p>' +
@@ -351,7 +354,7 @@ function renderAbout() {
     '</ul>' +
     '<h2 class="section-heading">Skills</h2>' +
     '<div style="display:flex;flex-wrap:wrap;gap:4px;">' +
-      skills.map(s => '<span class="tag">' + s + '</span>').join('') +
+      skills.map(function(s) { return '<span class="tag">' + s + '</span>' }).join('') +
     '</div>' +
   '</div>';
 }
@@ -371,15 +374,15 @@ function renderNotes() {
 }
 
 function setupNotes(el) {
-  const sidebar = el.querySelector('#notes-sidebar');
-  const content = el.querySelector('#notes-content');
+  var sidebar = el.querySelector('#notes-sidebar');
+  var content = el.querySelector('#notes-content');
   function renderList() {
     sidebar.innerHTML = '';
-    state.notes.forEach(n => {
-      const item = document.createElement('div');
+    state.notes.forEach(function(n) {
+      var item = document.createElement('div');
       item.className = 'note-item' + (n.id === state.currentNoteId ? ' active' : '');
       item.innerHTML = '<div class="note-item-title">' + esc(n.title) + '</div><div class="note-item-date">' + esc(n.date) + '</div>';
-      item.addEventListener('click', () => { state.currentNoteId = n.id; save(); renderList(); renderContent(n); });
+      item.addEventListener('click', function() { state.currentNoteId = n.id; save(); renderList(); renderContent(n) });
       sidebar.appendChild(item);
     });
   }
@@ -388,9 +391,9 @@ function setupNotes(el) {
       '<p class="note-content-date">' + esc(n.date) + '</p>' +
       '<p class="note-content-body">' + esc(n.body) + '</p>';
   }
-  const active = state.notes.find(n => n.id === state.currentNoteId);
-  if (active) { renderList(); renderContent(active); }
-  return () => {};
+  var active = state.notes.find(function(n) { return n.id === state.currentNoteId });
+  if (active) { renderList(); renderContent(active) }
+  return function() {};
 }
 
 function renderTerminal() {
@@ -404,12 +407,11 @@ function renderTerminal() {
 }
 
 function setupTerminal(el, appId) {
-  const output = el.querySelector('#terminal-output');
-  const input = el.querySelector('#terminal-input');
-  const winData = state.windows.get(appId);
+  var output = el.querySelector('#terminal-output');
+  var input = el.querySelector('#terminal-input');
 
   function print(text, color) {
-    const line = document.createElement('div');
+    var line = document.createElement('div');
     if (color) line.style.color = color;
     line.textContent = text;
     output.appendChild(line);
@@ -420,14 +422,14 @@ function setupTerminal(el, appId) {
   print('Type "help" for commands.\n');
 
   function execute(raw) {
-    const cmd = raw.trim();
+    var cmd = raw.trim();
     if (!cmd) return;
     print('visitor@ZI-os:~$ ' + cmd);
     state.terminalHistory.push(cmd);
     state.terminalHistoryIdx = state.terminalHistory.length;
-    const parts = cmd.split(' ');
-    const c = parts[0].toLowerCase();
-    const args = parts.slice(1);
+    var parts = cmd.split(' ');
+    var c = parts[0].toLowerCase();
+    var args = parts.slice(1);
 
     switch (c) {
       case 'help':
@@ -439,7 +441,7 @@ function setupTerminal(el, appId) {
       case 'whoami': print('visitor'); break;
       case 'ls': print('Desktop/  Documents/  Downloads/  notes.txt  readme.md'); break;
       case 'cat': {
-        const f = args[0] || '';
+        var f = args[0] || '';
         if (f === 'notes.txt') print('Welcome to my OS!');
         else if (f === 'readme.md') print('# web-os\nA portfolio styled like an OS.');
         else print('cat: ' + esc(f) + ': No such file');
@@ -447,13 +449,13 @@ function setupTerminal(el, appId) {
       }
       case 'calc':
         try {
-          const r = Function('"use strict"; return (' + args.join(' ') + ')')();
+          var r = Function('"use strict"; return (' + args.join(' ') + ')')();
           print('= ' + r);
-        } catch (e) { print('Error: ' + e.message); }
+        } catch (e) { print('Error: ' + e.message) }
         break;
       case 'theme': {
-        const t = args[0];
-        if (t && themes[t]) { applyTheme(t); print('Theme: ' + themes[t]); }
+        var t = args[0];
+        if (t && themes[t]) { applyTheme(t); print('Theme: ' + themes[t]) }
         else print('Themes: ' + Object.keys(themes).join(', '));
         break;
       }
@@ -462,7 +464,7 @@ function setupTerminal(el, appId) {
     }
   }
 
-  input.addEventListener('keydown', (e) => {
+  input.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') { execute(input.value); input.value = ''; }
     else if (e.key === 'ArrowUp') {
       e.preventDefault();
@@ -482,33 +484,35 @@ function setupTerminal(el, appId) {
     }
   });
 
-  const focusInterval = setInterval(() => {
-    if (!state.windows.has('terminal')) { clearInterval(focusInterval); return; }
+  var focusInterval = setInterval(function() {
+    if (!state.windows.has('terminal')) { clearInterval(focusInterval); return }
     if (document.activeElement !== input) input.focus();
   }, 500);
-  return () => clearInterval(focusInterval);
+  return function() { clearInterval(focusInterval) };
 }
 
 function renderCalculator() {
-  const btns = ['C','\u00B1','%','\u00F7','7','8','9','\u00D7','4','5','6','-','1','2','3','+','0','.','\u232B','='];
+  var btns = ['C','\u00B1','%','\u00F7','7','8','9','\u00D7','4','5','6','-','1','2','3','+','0','.','\u232B','='];
   return '<div class="calc-grid">' +
     '<div class="calc-display" id="calc-display">0</div>' +
-    btns.map(b => {
-      const cls = ['\u00F7','\u00D7','-','+','='].includes(b) ? ' operator' : (b === '=' ? ' equals' : '');
+    btns.map(function(b) {
+      var cls = b === '=' ? ' equals' : ['\u00F7','\u00D7','-','+'].includes(b) ? ' operator' : '';
       return '<div class="calc-btn' + cls + '" data-calc="' + b + '">' + b + '</div>';
     }).join('') +
   '</div>';
 }
 
 function setupCalculator(el) {
-  const display = el.querySelector('#calc-display');
-  let cur = '0', prev = null, op = null, fresh = true;
+  var display = el.querySelector('#calc-display');
+  var cur = '0', prev = null, op = null, fresh = true;
+  var lastOp = null, lastOperand = null;
 
   function update() { display.textContent = cur; }
+
   function calc() {
     if (prev === null || op === null) return;
-    const a = parseFloat(prev), b = parseFloat(cur);
-    let r;
+    var a = parseFloat(prev), b = parseFloat(cur);
+    var r;
     switch (op) {
       case '+': r = a + b; break;
       case '-': r = a - b; break;
@@ -516,45 +520,72 @@ function setupCalculator(el) {
       case '\u00F7': r = b === 0 ? 'Error' : a / b; break;
       default: return;
     }
-    cur = String(parseFloat(r.toFixed(10)));
+    if (typeof r === 'number') cur = String(parseFloat(r.toFixed(10)));
+    else cur = String(r);
+    lastOp = op; lastOperand = cur;
     prev = null; op = null; fresh = true;
     update();
   }
 
-  el.querySelectorAll('.calc-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const v = btn.dataset.calc;
-      if (v >= '0' && v <= '9') { cur = fresh ? v : cur + v; fresh = false; }
-      else if (v === '.') { if (fresh) { cur = '0.'; fresh = false; } else if (!cur.includes('.')) cur += '.'; }
-      else if (v === 'C') { cur = '0'; prev = null; op = null; fresh = true; }
-      else if (v === '\u00B1') cur = String(-parseFloat(cur));
-      else if (v === '%') cur = String(parseFloat(cur) / 100);
-      else if (v === '\u232B') { cur = cur.length > 1 ? cur.slice(0, -1) : '0'; fresh = cur === '0'; }
-      else if (v === '=') calc();
-      else if (['+','-','\u00D7','\u00F7'].includes(v)) {
-        if (prev !== null && op && !fresh) calc();
-        prev = cur; op = v; fresh = true;
+  function pressButton(v) {
+    if (v >= '0' && v <= '9') { cur = fresh ? v : cur + v; fresh = false; }
+    else if (v === '.') { if (fresh) { cur = '0.'; fresh = false } else if (!cur.includes('.')) cur += '.'; }
+    else if (v === 'C') { cur = '0'; prev = null; op = null; fresh = true; lastOp = null; lastOperand = null; }
+    else if (v === '\u00B1') { cur = String(-parseFloat(cur)); fresh = false; }
+    else if (v === '%') { cur = String(parseFloat(cur) / 100); fresh = false; }
+    else if (v === '\u232B') { cur = cur.length > 1 ? cur.slice(0, -1) : '0'; fresh = cur === '0'; }
+    else if (v === '=') {
+      if (prev !== null && op) calc();
+      else if (lastOp && lastOperand !== null) {
+        prev = cur; op = lastOp; cur = lastOperand;
+        calc();
       }
-      update();
-    });
+    }
+    else if (['+','-','\u00D7','\u00F7'].includes(v)) {
+      if (prev !== null && op && !fresh) calc();
+      prev = cur; op = v; fresh = true;
+    }
+    update();
+  }
+
+  el.querySelectorAll('.calc-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() { pressButton(btn.dataset.calc) });
   });
-  return () => {};
+
+  el.setAttribute('tabindex', '0');
+  el.style.outline = 'none';
+  el.addEventListener('keydown', function(e) {
+    var k = e.key;
+    if (k >= '0' && k <= '9') pressButton(k);
+    else if (k === '.') pressButton('.');
+    else if (k === '+') pressButton('+');
+    else if (k === '-') pressButton('-');
+    else if (k === '*') pressButton('\u00D7');
+    else if (k === '/') { e.preventDefault(); pressButton('\u00F7') }
+    else if (k === 'Enter' || k === '=') pressButton('=');
+    else if (k === 'Escape' || k.toLowerCase() === 'c') pressButton('C');
+    else if (k === 'Backspace') pressButton('\u232B');
+    else if (k === '%') pressButton('%');
+  });
+  el.focus();
+
+  return function() {};
 }
 
 function renderSettings() {
-  const themesHtml = Object.entries(themes).map(([k, name]) =>
-    '<div class="theme-option' + (state.theme === k ? ' active' : '') + '" data-theme="' + k + '">' +
+  var themesHtml = Object.entries(themes).map(function([k, name]) {
+    return '<div class="theme-option' + (state.theme === k ? ' active' : '') + '" data-theme="' + k + '">' +
       '<div class="theme-preview">' +
         '<div style="background:' + themeColors[k][0] + '"></div>' +
         '<div style="background:' + themeColors[k][1] + '"></div>' +
       '</div>' +
       '<div class="theme-name">' + name + '</div>' +
-    '</div>'
-  ).join('');
+    '</div>';
+  }).join('');
 
-  const wallsHtml = wallpapers.map((url, i) =>
-    '<div class="wallpaper-option' + (state.wallpaper === url ? ' active' : '') + '" data-wallpaper="' + i + '" style="background-image:url(\'' + url + '\')"></div>'
-  ).join('');
+  var wallsHtml = wallpapers.map(function(url, i) {
+    return '<div class="wallpaper-option' + (state.wallpaper === url ? ' active' : '') + '" data-wallpaper="' + i + '" style="background-image:url(\'' + url + '\')"></div>';
+  }).join('');
 
   return '<div>' +
     '<div class="settings-section"><div class="settings-label">Theme</div><div class="theme-grid">' + themesHtml + '</div></div>' +
@@ -566,23 +597,23 @@ function renderSettings() {
 }
 
 function setupSettings(el) {
-  el.querySelectorAll('.theme-option').forEach(opt => {
-    opt.addEventListener('click', () => {
+  el.querySelectorAll('.theme-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
       applyTheme(opt.dataset.theme);
-      el.querySelectorAll('.theme-option').forEach(o => o.classList.remove('active'));
+      el.querySelectorAll('.theme-option').forEach(function(o) { o.classList.remove('active') });
       opt.classList.add('active');
       notify('Theme changed', themes[opt.dataset.theme]);
     });
   });
-  el.querySelectorAll('.wallpaper-option').forEach(opt => {
-    opt.addEventListener('click', () => {
+  el.querySelectorAll('.wallpaper-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
       setWallpaper(wallpapers[parseInt(opt.dataset.wallpaper)]);
-      el.querySelectorAll('.wallpaper-option').forEach(o => o.classList.remove('active'));
+      el.querySelectorAll('.wallpaper-option').forEach(function(o) { o.classList.remove('active') });
       opt.classList.add('active');
       notify('Wallpaper updated', '');
     });
   });
-  return () => {};
+  return function() {};
 }
 
 function renderBrowser() {
@@ -599,20 +630,17 @@ function renderBrowser() {
 }
 
 function setupBrowser(el) {
-  const urlInput = el.querySelector('#browser-url');
-  const frame = el.querySelector('#browser-frame');
+  var urlInput = el.querySelector('#browser-url');
+  var frame = el.querySelector('#browser-frame');
   function navigate() {
-    const val = urlInput.value.trim();
+    var val = urlInput.value.trim();
     if (!val) return;
-    if (/^https?:\/\//i.test(val)) {
-      frame.src = val;
-    } else {
-      frame.src = 'https://www.google.com/search?q=' + encodeURIComponent(val);
-    }
+    if (/^https?:\/\//i.test(val)) frame.src = val;
+    else frame.src = 'https://www.google.com/search?q=' + encodeURIComponent(val);
   }
   el.querySelector('#browser-go').addEventListener('click', navigate);
-  urlInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') navigate(); });
-  return () => {};
+  urlInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') navigate() });
+  return function() {};
 }
 
 function renderMusic() {
@@ -636,33 +664,33 @@ function renderMusic() {
 }
 
 function setupMusic(el, appId) {
-  const searchInput = el.querySelector('#music-search');
-  const searchBtn = el.querySelector('#music-search-btn');
-  const resultsEl = el.querySelector('#music-results');
-  const searchStatus = el.querySelector('#music-search-status');
-  const playBtn = el.querySelector('#music-play-btn');
-  const nowPlaying = el.querySelector('#music-now-playing');
-  const statusEl = el.querySelector('#music-status');
-  const audio = el.querySelector('#music-audio');
-  let currentIdx = null;
+  var searchInput = el.querySelector('#music-search');
+  var searchBtn = el.querySelector('#music-search-btn');
+  var resultsEl = el.querySelector('#music-results');
+  var searchStatus = el.querySelector('#music-search-status');
+  var playBtn = el.querySelector('#music-play-btn');
+  var nowPlaying = el.querySelector('#music-now-playing');
+  var statusEl = el.querySelector('#music-status');
+  var audio = el.querySelector('#music-audio');
+  var currentIdx = null;
   state.musicAudio = audio;
 
   async function searchMusic() {
-    const q = searchInput.value.trim();
-    if (!q) { searchStatus.textContent = 'Enter a song name.'; return; }
+    var q = searchInput.value.trim();
+    if (!q) { searchStatus.textContent = 'Enter a song name.'; return }
     searchStatus.textContent = 'Searching...';
     searchBtn.disabled = true;
     try {
-      const res = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(q) + '&entity=song&limit=20&country=US');
-      const data = await res.json();
+      var res = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(q) + '&entity=song&limit=20&country=US');
+      var data = await res.json();
       if (!data.results || data.results.length === 0) {
         resultsEl.innerHTML = '<span style="font-size:11px;color:var(--text2);">No results.</span>';
         searchStatus.textContent = 'No results.';
         return;
       }
       state.musicResults = data.results;
-      resultsEl.innerHTML = data.results.map((t, i) => {
-        const img = (t.artworkUrl100 || '').replace('100x100', '300x300');
+      resultsEl.innerHTML = data.results.map(function(t, i) {
+        var img = (t.artworkUrl100 || '').replace('100x100', '300x300');
         return '<div class="music-track" data-track="' + i + '" style="padding:6px;background:var(--surface2);border:1px solid var(--border);margin-bottom:4px;cursor:pointer;display:flex;align-items:center;gap:8px;">' +
           (img ? '<img src="' + esc(img) + '" style="width:40px;height:40px;" loading="lazy" onerror="this.style.display=\'none\'">' : '') +
           '<div style="flex:1;min-width:0;"><div style="font-size:11px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(t.trackName || 'Unknown') + '</div>' +
@@ -670,8 +698,8 @@ function setupMusic(el, appId) {
           '<span style="font-size:14px;">&#9654;</span></div>';
       }).join('');
       searchStatus.textContent = data.results.length + ' result(s).';
-      el.querySelectorAll('.music-track').forEach(te => {
-        te.addEventListener('click', () => playTrack(Number(te.dataset.track)));
+      el.querySelectorAll('.music-track').forEach(function(te) {
+        te.addEventListener('click', function() { playTrack(Number(te.dataset.track)) });
       });
     } catch (e) {
       searchStatus.textContent = 'Music API unavailable.';
@@ -680,7 +708,7 @@ function setupMusic(el, appId) {
   }
 
   async function playTrack(index) {
-    const track = state.musicResults[index];
+    var track = state.musicResults[index];
     if (!track || !track.previewUrl) return;
     currentIdx = index;
     nowPlaying.textContent = track.trackName || 'Unknown';
@@ -693,8 +721,8 @@ function setupMusic(el, appId) {
       statusEl.textContent = 'Playing';
       playBtn.textContent = 'Pause';
       playBtn.disabled = false;
-      el.querySelectorAll('.music-track').forEach(te => te.style.background = '');
-      const sel = el.querySelector('[data-track="' + index + '"]');
+      el.querySelectorAll('.music-track').forEach(function(te) { te.style.background = '' });
+      var sel = el.querySelector('[data-track="' + index + '"]');
       if (sel) sel.style.background = 'var(--accent)';
     } catch (e) {
       statusEl.textContent = 'Cannot play this track';
@@ -703,20 +731,20 @@ function setupMusic(el, appId) {
   }
 
   searchBtn.addEventListener('click', searchMusic);
-  searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') searchMusic(); });
-  playBtn.addEventListener('click', async () => {
-    if (!audio.src && currentIdx !== null) { await playTrack(currentIdx); return; }
-    if (audio.paused) { await audio.play(); statusEl.textContent = 'Playing'; playBtn.textContent = 'Pause'; }
-    else { audio.pause(); statusEl.textContent = 'Paused'; playBtn.textContent = 'Play'; }
+  searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') searchMusic() });
+  playBtn.addEventListener('click', async function() {
+    if (!audio.src && currentIdx !== null) { await playTrack(currentIdx); return }
+    if (audio.paused) { await audio.play(); statusEl.textContent = 'Playing'; playBtn.textContent = 'Pause' }
+    else { audio.pause(); statusEl.textContent = 'Paused'; playBtn.textContent = 'Play' }
   });
-  audio.addEventListener('ended', () => { statusEl.textContent = 'Ended'; playBtn.textContent = 'Play'; });
-  return () => { audio.pause(); audio.src = ''; state.musicAudio = null; };
+  audio.addEventListener('ended', function() { statusEl.textContent = 'Ended'; playBtn.textContent = 'Play' });
+  return function() { audio.pause(); audio.src = ''; state.musicAudio = null };
 }
 
 function renderWeather() {
-  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const today = new Date().getDay();
-  const temps = [24,22,19,23,25,27,21];
+  var days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var today = new Date().getDay();
+  var temps = [24,22,19,23,25,27,21];
   return '<div>' +
     '<div class="weather-card">' +
       '<div style="font-size:36px;margin-bottom:4px;">&#9728;</div>' +
@@ -725,13 +753,13 @@ function renderWeather() {
       '<div style="font-size:11px;color:var(--text2);margin-top:4px;">Feels like 26&deg;C</div>' +
     '</div>' +
     '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:11px;">' +
-      days.map((d, i) =>
-        '<div style="padding:4px;border:1px solid var(--border);' + (i === (today || 7) - 1 ? 'border-color:var(--accent);' : '') + '">' +
+      days.map(function(d, i) {
+        return '<div style="padding:4px;border:1px solid var(--border);' + (i === (today || 7) - 1 ? 'border-color:var(--accent);' : '') + '">' +
           '<div style="color:var(--text2);">' + d + '</div>' +
           '<div style="margin:4px 0;">' + (i === (today || 7) - 1 ? '&#9728;' : '&#9729;') + '</div>' +
           '<div>' + temps[i] + '&deg;</div>' +
-        '</div>'
-      ).join('') +
+        '</div>';
+      }).join('') +
     '</div>' +
     '<div style="font-size:10px;color:var(--text2);margin-top:8px;">Humidity: 45% | Wind: 12 km/h</div>' +
   '</div>';
@@ -749,31 +777,31 @@ function renderCalendar() {
 }
 
 function setupCalendar(el) {
-  const grid = el.querySelector('#cal-grid');
-  const monthYear = el.querySelector('#cal-month-year');
-  const date = state.calendarDate;
+  var grid = el.querySelector('#cal-grid');
+  var monthYear = el.querySelector('#cal-month-year');
+  var date = state.calendarDate;
 
   function render() {
-    const year = date.getFullYear(), month = date.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    var year = date.getFullYear(), month = date.getMonth();
+    var firstDay = new Date(year, month, 1).getDay();
+    var daysInMonth = new Date(year, month + 1, 0).getDate();
     monthYear.textContent = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    let html = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => '<div class="calendar-header">' + d + '</div>').join('');
-    const prevLast = new Date(year, month, 0).getDate();
-    for (let i = firstDay - 1; i >= 0; i--) html += '<div class="calendar-day other-month">' + (prevLast - i) + '</div>';
-    const today = new Date();
-    for (let d = 1; d <= daysInMonth; d++) {
-      const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+    var html = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d) { return '<div class="calendar-header">' + d + '</div>' }).join('');
+    var prevLast = new Date(year, month, 0).getDate();
+    for (var i = firstDay - 1; i >= 0; i--) html += '<div class="calendar-day other-month">' + (prevLast - i) + '</div>';
+    var today = new Date();
+    for (var d = 1; d <= daysInMonth; d++) {
+      var isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
       html += '<div class="calendar-day' + (isToday ? ' today' : '') + '">' + d + '</div>';
     }
-    for (let d = 1; d <= 42 - (firstDay + daysInMonth); d++) html += '<div class="calendar-day other-month">' + d + '</div>';
+    for (var d = 1; d <= 42 - (firstDay + daysInMonth); d++) html += '<div class="calendar-day other-month">' + d + '</div>';
     grid.innerHTML = html;
   }
 
-  el.querySelector('#cal-prev').addEventListener('click', () => { date.setMonth(date.getMonth() - 1); render(); });
-  el.querySelector('#cal-next').addEventListener('click', () => { date.setMonth(date.getMonth() + 1); render(); });
+  el.querySelector('#cal-prev').addEventListener('click', function() { date.setMonth(date.getMonth() - 1); render() });
+  el.querySelector('#cal-next').addEventListener('click', function() { date.setMonth(date.getMonth() + 1); render() });
   render();
-  return () => {};
+  return function() {};
 }
 
 function renderTasks() {
@@ -787,87 +815,84 @@ function renderTasks() {
 }
 
 function setupTasks(el) {
-  const list = el.querySelector('#task-list');
-  const input = el.querySelector('#task-input');
+  var list = el.querySelector('#task-list');
+  var input = el.querySelector('#task-input');
 
   function render() {
-    list.innerHTML = state.tasks.map(t =>
-      '<div class="task-item">' +
+    list.innerHTML = state.tasks.map(function(t) {
+      return '<div class="task-item">' +
         '<div class="task-checkbox' + (t.done ? ' checked' : '') + '" data-id="' + t.id + '"></div>' +
         '<div class="task-text' + (t.done ? ' done' : '') + '">' + esc(t.text) + '</div>' +
         '<button class="task-delete" data-id="' + t.id + '">&times;</button>' +
-      '</div>'
-    ).join('');
-    list.querySelectorAll('.task-checkbox').forEach(cb => {
-      cb.addEventListener('click', () => {
-        const task = state.tasks.find(t => t.id === parseInt(cb.dataset.id));
-        if (task) { task.done = !task.done; save(); render(); }
+      '</div>';
+    }).join('');
+    list.querySelectorAll('.task-checkbox').forEach(function(cb) {
+      cb.addEventListener('click', function() {
+        var task = state.tasks.find(function(t) { return t.id === parseInt(cb.dataset.id) });
+        if (task) { task.done = !task.done; save(); render() }
       });
     });
-    list.querySelectorAll('.task-delete').forEach(btn => {
-      btn.addEventListener('click', () => {
-        state.tasks = state.tasks.filter(t => t.id !== parseInt(btn.dataset.id));
+    list.querySelectorAll('.task-delete').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        state.tasks = state.tasks.filter(function(t) { return t.id !== parseInt(btn.dataset.id) });
         save(); render();
       });
     });
   }
 
   function add() {
-    const text = input.value.trim();
+    var text = input.value.trim();
     if (!text) return;
-    const id = state.tasks.length > 0 ? Math.max(...state.tasks.map(t => t.id)) + 1 : 1;
-    state.tasks.push({ id, text, done: false });
+    var id = state.tasks.length > 0 ? Math.max.apply(null, state.tasks.map(function(t) { return t.id })) + 1 : 1;
+    state.tasks.push({ id: id, text: text, done: false });
     input.value = '';
     save(); render();
   }
 
   el.querySelector('#task-add').addEventListener('click', add);
-  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') add(); });
+  input.addEventListener('keydown', function(e) { if (e.key === 'Enter') add() });
   render();
-  return () => {};
+  return function() {};
 }
 
-// Desktop icons
 function renderDesktopIcons() {
-  const c = $('desktop-icons');
+  var c = $('desktop-icons');
   c.innerHTML = '';
-  const desktopApps = ['welcome','about','projects','notes','terminal','calculator','settings','browser','music','weather','calendar','tasks'];
-  desktopApps.forEach(appId => {
-    const app = APPS[appId];
+  var desktopApps = ['welcome','about','projects','notes','terminal','calculator','settings','browser','music','weather','calendar','tasks'];
+  desktopApps.forEach(function(appId) {
+    var app = APPS[appId];
     if (!app) return;
-    const el = document.createElement('div');
+    var el = document.createElement('div');
     el.className = 'icon';
     el.dataset.app = appId;
     el.innerHTML = icon(app.icon) + '<span class="icon-label">' + esc(app.title) + '</span>';
-    el.addEventListener('click', () => wm.open(appId));
+    el.addEventListener('click', function() { wm.open(appId) });
     c.appendChild(el);
   });
 }
 
-// Event listeners
 function setupEvents() {
   $('start-btn').addEventListener('click', toggleStartMenu);
 
-  document.addEventListener('click', (e) => {
-    if ($('start-menu').classList.contains('open') && !$('start-menu').contains(e.target) && e.target !== $('start-btn')) {
+  document.addEventListener('click', function(e) {
+    if ($('start-menu').classList.contains('open') && !$('start-menu').contains(e.target) && e.target !== $('start-btn'))
       $('start-menu').classList.remove('open');
-    }
   });
 
-  document.addEventListener('contextmenu', (e) => {
+  document.addEventListener('contextmenu', function(e) {
     if (e.target.closest('.window') || e.target.closest('#taskbar') || e.target.closest('#start-menu') || e.target.closest('.icon')) return;
     e.preventDefault();
     showCtx(e.clientX, e.clientY);
   });
 
-  document.addEventListener('click', (e) => {
+  document.addEventListener('click', function(e) {
     if (!e.target.closest('#context-menu')) hideCtx();
   });
 
-  $('context-menu').addEventListener('click', (e) => {
-    const item = e.target.closest('.ctx-item');
+  $('context-menu').addEventListener('click', function(e) {
+    var item = e.target.closest('.ctx-item');
     if (!item) return;
-    const action = item.dataset.action;
+    var action = item.dataset.action;
     if (action === 'refresh') location.reload();
     if (action === 'terminal') wm.open('terminal');
     if (action === 'settings') wm.open('settings');
@@ -875,30 +900,30 @@ function setupEvents() {
     hideCtx();
   });
 
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.control-btn');
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.control-btn');
     if (!btn) return;
-    const action = btn.dataset.action;
-    const appId = btn.dataset.app;
+    var action = btn.dataset.action;
+    var appId = btn.dataset.app;
     if (!action || !appId) return;
     if (action === 'close') wm.close(appId);
     if (action === 'minimize') wm.minimize(appId);
     if (action === 'maximize') wm.toggleMax(appId);
   });
 
-  document.addEventListener('keydown', (e) => {
+  document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       $('start-menu').classList.remove('open');
       hideCtx();
     }
   });
 
-  $('settings-shortcut').addEventListener('click', () => {
+  $('settings-shortcut').addEventListener('click', function() {
     wm.open('settings');
     $('start-menu').classList.remove('open');
   });
 
-  $('power-shortcut').addEventListener('click', () => {
+  $('power-shortcut').addEventListener('click', function() {
     if (confirm('Shut down ZI OS?')) {
       document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#000;color:#888;font-family:monospace;flex-direction:column;gap:12px;">' +
         '<div style="font-size:42px;">&#9211;</div>' +
@@ -909,8 +934,7 @@ function setupEvents() {
   });
 }
 
-// Init
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
   wm.init();
   renderDesktopIcons();
   renderStartMenu();
