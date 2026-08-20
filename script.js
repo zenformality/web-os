@@ -95,6 +95,16 @@ function save() {
   localStorage.setItem('web-os-fs', JSON.stringify(state.fs));
 }
 
+function findFsNode(pathArr) {
+  var node = state.fs;
+  for (var i = 0; i < pathArr.length; i++) {
+    var found = node.children.find(function(c) { return c.name === pathArr[i] && c.type === 'folder' });
+    if (!found) return null;
+    node = found;
+  }
+  return node;
+}
+
 function notify(title, body) {
   var area = $('notification-area');
   var n = document.createElement('div');
@@ -1116,10 +1126,21 @@ function setupEditor(el) {
   function saveCurrent() {
     var f = state.editorFiles.find(function(x) { return x.id === state.editorCurrentId });
     if (!f) return;
+    var oldName = f.name;
     f.name = filename.value.trim() || 'untitled.txt';
     f.body = textarea.value;
     var d = new Date();
     f.date = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    if (f._fsPath) {
+      var fsNode = findFsNode(f._fsPath);
+      if (fsNode) {
+        var fsFile = fsNode.children.find(function(c) { return c.name === f._fsName && c.type === 'file' });
+        if (fsFile) {
+          if (f.name !== oldName) { fsFile.name = f.name; f._fsName = f.name; }
+          fsFile.body = f.body;
+        }
+      }
+    }
     save();
     renderList();
   }
@@ -1137,11 +1158,21 @@ function setupEditor(el) {
 
   delBtn.addEventListener('click', function() {
     if (state.editorFiles.length <= 1) return;
-    if (!confirm('Delete this file?')) return;
+    var delFile = state.editorFiles.find(function(f) { return f.id === state.editorCurrentId });
+    var delName = delFile ? delFile.name : '';
+    if (!confirm('Delete "' + delName + '"?')) return;
+    if (delFile && delFile._fsPath) {
+      var fsNode = findFsNode(delFile._fsPath);
+      if (fsNode) {
+        fsNode.children = fsNode.children.filter(function(c) { return c.name !== delFile._fsName || c.type !== 'file' });
+      }
+    }
     state.editorFiles = state.editorFiles.filter(function(f) { return f.id !== state.editorCurrentId });
-    state.editorCurrentId = state.editorFiles[0].id;
+    state.editorCurrentId = state.editorFiles.length > 0 ? state.editorFiles[0].id : null;
     save();
-    loadFile(state.editorCurrentId);
+    if (state.editorCurrentId) loadFile(state.editorCurrentId);
+    else { textarea.value = ''; filename.value = ''; renderList(); }
+    notify('Deleted', delName);
   });
 
   textarea.addEventListener('keydown', function(e) {
@@ -1234,22 +1265,35 @@ function setupFiles(el) {
       } else {
         row.style.cursor = 'pointer';
         row.addEventListener('dblclick', function() {
-          var id = state.editorFiles.length > 0 ? Math.max.apply(null, state.editorFiles.map(function(f) { return f.id })) + 1 : 1;
-          var d = new Date();
-          var date = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-          state.editorFiles.push({ id: id, name: item.name, body: item.body || '', date: date });
-          state.editorCurrentId = id;
+          var existing = state.editorFiles.find(function(ef) {
+            return ef._fsPath && ef._fsPath.join('/') === state.fsPath.join('/') && ef._fsName === item.name;
+          });
+          if (existing) {
+            state.editorCurrentId = existing.id;
+          } else {
+            var id = state.editorFiles.length > 0 ? Math.max.apply(null, state.editorFiles.map(function(f) { return f.id })) + 1 : 1;
+            var d = new Date();
+            var date = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            state.editorFiles.push({ id: id, name: item.name, body: item.body || '', date: date, _fsPath: state.fsPath.slice(), _fsName: item.name });
+            state.editorCurrentId = id;
+          }
           save();
           if (state.windows.has('editor')) wm.close('editor');
           wm.open('editor');
-          notify('Opened in Editor', item.name);
         });
       }
       row.querySelector('.files-rename').addEventListener('click', function(e) {
         e.stopPropagation();
-        var newName = prompt('Rename "' + item.name + '" to:', item.name);
-        if (newName && newName.trim() && newName.trim() !== item.name) {
+        var oldName = item.name;
+        var newName = prompt('Rename "' + oldName + '" to:', oldName);
+        if (newName && newName.trim() && newName.trim() !== oldName) {
           item.name = newName.trim();
+          state.editorFiles.forEach(function(ef) {
+            if (ef._fsPath && ef._fsPath.join('/') === state.fsPath.join('/') && ef._fsName === oldName) {
+              ef.name = newName.trim();
+              ef._fsName = newName.trim();
+            }
+          });
           save();
           renderDir();
         }
@@ -1257,9 +1301,19 @@ function setupFiles(el) {
       row.querySelector('.files-del').addEventListener('click', function(e) {
         e.stopPropagation();
         if (!confirm('Delete "' + item.name + '"?')) return;
+        var delName = item.name;
+        var delPath = state.fsPath.slice();
         dir.children = dir.children.filter(function(c) { return c !== item });
+        state.editorFiles = state.editorFiles.filter(function(f) {
+          if (f._fsPath && f._fsPath.join('/') === delPath.join('/') && f._fsName === delName) return false;
+          return true;
+        });
+        if (state.editorFiles.length > 0 && !state.editorFiles.find(function(f) { return f.id === state.editorCurrentId })) {
+          state.editorCurrentId = state.editorFiles[0].id;
+        }
         save();
         renderDir();
+        notify('Deleted', delName);
       });
       list.appendChild(row);
     });
