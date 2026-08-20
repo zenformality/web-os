@@ -782,6 +782,113 @@ html, body {
   vertical-align: middle;
 }
 
+.clock-tab {
+  flex: 1;
+  padding: 8px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text2);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.clock-tab:hover { color: var(--text); }
+.clock-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.clock-section {
+  padding: 8px 0;
+  text-align: center;
+}
+
+.editor-layout {
+  display: flex;
+  height: 340px;
+}
+.editor-sidebar {
+  width: 130px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+}
+.editor-file-item {
+  padding: 8px 10px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+}
+.editor-file-item:hover { background: var(--surface2); }
+.editor-file-item.active {
+  background: rgba(124,109,250,0.1);
+  border-left-color: var(--accent);
+}
+.editor-file-name {
+  font-size: 11px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.editor-file-date {
+  font-size: 9px;
+  color: var(--text2);
+}
+.editor-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.editor-textarea {
+  flex: 1;
+  resize: none;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 10px;
+  outline: none;
+  min-height: 200px;
+}
+.editor-textarea:focus { border-color: var(--accent); }
+
+.files-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.files-list {
+  border: 1px solid var(--border);
+  overflow-y: auto;
+  max-height: 280px;
+}
+.files-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.files-row:last-child { border-bottom: none; }
+.files-row:hover { background: var(--surface2); }
+.files-row .app-icon {
+  width: 14px;
+  height: 14px;
+}
+.files-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.files-type { font-size: 10px; color: var(--text2); }
+.files-rename, .files-del { opacity: 0.5; }
+.files-row:hover .files-rename,
+.files-row:hover .files-del { opacity: 1; }
+
 @media (max-width: 640px) {
   .window { min-width: 260px; max-width: 95vw; }
   #start-menu { width: calc(100vw - 16px); left: 8px; }

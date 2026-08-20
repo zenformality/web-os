@@ -30,7 +30,10 @@ var icons = {
   music: iconBase + 'music.svg',
   weather: iconBase + 'cloud.svg',
   calendar: iconBase + 'calendar.svg',
-  tasks: iconBase + 'clipboard-check.svg'
+  tasks: iconBase + 'clipboard-check.svg',
+  clock: iconBase + 'clock.svg',
+  editor: iconBase + 'file-code.svg',
+  files: iconBase + 'folder.svg'
 };
 
 function icon(src) {
@@ -51,6 +54,9 @@ const APPS = {
   weather:   { id: 'weather',   title: 'Weather',   icon: icons.weather,   w: 300, h: 340, render: renderWeather,   setup: null },
   calendar:  { id: 'calendar',  title: 'Calendar',  icon: icons.calendar,  w: 320, h: 360, render: renderCalendar,  setup: setupCalendar },
   tasks:     { id: 'tasks',     title: 'Tasks',     icon: icons.tasks,     w: 380, h: 380, render: renderTasks,     setup: setupTasks },
+  clock:     { id: 'clock',     title: 'Clock',     icon: icons.clock,     w: 340, h: 380, render: renderClock,     setup: setupClock },
+  editor:    { id: 'editor',    title: 'Editor',    icon: icons.editor,    w: 500, h: 420, render: renderEditor,    setup: setupEditor },
+  files:     { id: 'files',     title: 'Files',     icon: icons.files,     w: 480, h: 380, render: renderFiles,     setup: setupFiles },
 };
 
 var state = {
@@ -58,14 +64,18 @@ var state = {
   topZ: 100,
   theme: localStorage.getItem('web-os-theme') || 'midnight',
   wallpaper: localStorage.getItem('web-os-wallpaper') || wallpapers[0],
-  notes: JSON.parse(localStorage.getItem('web-os-notes') || '[{"id":1,"title":"Pinned Notes","body":"Welcome! Click any note on the left.","date":"2026-08-17"},{"id":2,"title":"Projects","body":"Working on web-os","date":"2026-08-16"},{"id":3,"title":"Reading","body":"Opposite of Always by Justin A. Reynolds","date":"2026-08-15"},{"id":4,"title":"Ideas","body":"Add terminal, music player, and games.","date":"2026-08-14"}]'),
+  notes: (function() { try { return JSON.parse(localStorage.getItem('web-os-notes')) } catch(e) { return null } })() || [{"id":1,"title":"Pinned Notes","body":"Welcome! Click any note on the left.","date":"2026-08-17"},{"id":2,"title":"Projects","body":"Working on web-os","date":"2026-08-16"},{"id":3,"title":"Reading","body":"Opposite of Always by Justin A. Reynolds","date":"2026-08-15"},{"id":4,"title":"Ideas","body":"Add terminal, music player, and games.","date":"2026-08-14"}],
   currentNoteId: 1,
   terminalHistory: [],
   terminalHistoryIdx: -1,
-  tasks: JSON.parse(localStorage.getItem('web-os-tasks') || '[{"id":1,"text":"Build web OS","done":true},{"id":2,"text":"Add more themes","done":true},{"id":3,"text":"Add terminal app","done":false},{"id":4,"text":"Write documentation","done":false}]'),
+  tasks: (function() { try { return JSON.parse(localStorage.getItem('web-os-tasks')) } catch(e) { return null } })() || [{"id":1,"text":"Build web OS","done":true},{"id":2,"text":"Add more themes","done":true},{"id":3,"text":"Add terminal app","done":false},{"id":4,"text":"Write documentation","done":false}],
   currentTrack: null,
   calendarDate: new Date(),
   selectedDay: null,
+  editorFiles: (function() { try { return JSON.parse(localStorage.getItem('web-os-editor-files')) } catch(e) { return null } })() || [{"id":1,"name":"welcome.txt","body":"Hello! This is a simple text editor.","date":"2026-08-20"},{"id":2,"name":"notes.txt","body":"Some random notes go here.","date":"2026-08-19"},{"id":3,"name":"todo.txt","body":"- finish web os\n- add more apps\n- sleep","date":"2026-08-18"}],
+  editorCurrentId: 1,
+  fs: (function() { try { return JSON.parse(localStorage.getItem('web-os-fs')) } catch(e) { return null } })() || {"name":"/","type":"folder","children":[{"name":"Documents","type":"folder","children":[{"name":"readme.txt","type":"file","body":"welcome to ZI OS"},{"name":"todo.txt","type":"file","body":"do stuff"}]},{"name":"Downloads","type":"folder","children":[]},{"name":"Pictures","type":"folder","children":[{"name":"notes.txt","type":"file","body":"remember this"}]}]},
+  fsPath: [],
 };
 
 function $(id) { return document.getElementById(id); }
@@ -81,6 +91,8 @@ function save() {
   localStorage.setItem('web-os-wallpaper', state.wallpaper);
   localStorage.setItem('web-os-notes', JSON.stringify(state.notes));
   localStorage.setItem('web-os-tasks', JSON.stringify(state.tasks));
+  localStorage.setItem('web-os-editor-files', JSON.stringify(state.editorFiles));
+  localStorage.setItem('web-os-fs', JSON.stringify(state.fs));
 }
 
 function notify(title, body) {
@@ -886,10 +898,403 @@ function setupTasks(el) {
   return function() {};
 }
 
+function renderClock() {
+  return '<div>' +
+    '<div class="clock-section" style="text-align:center;margin-bottom:12px;">' +
+      '<div id="clock-big-time" style="font-size:42px;font-weight:bold;color:var(--accent);padding:12px 0 4px;">00:00:00</div>' +
+      '<div id="clock-big-date" style="font-size:12px;color:var(--text2);">Loading...</div>' +
+    '</div>' +
+    '<div class="clock-tabs" style="display:flex;gap:0;margin-bottom:0;border-bottom:1px solid var(--border);">' +
+      '<button class="clock-tab active" data-tab="stopwatch">Stopwatch</button>' +
+      '<button class="clock-tab" data-tab="timer">Timer</button>' +
+    '</div>' +
+    '<div class="clock-section" id="clock-stopwatch">' +
+      '<div id="sw-display" style="font-size:32px;font-weight:bold;margin:12px 0 10px;letter-spacing:2px;">00:00.00</div>' +
+      '<div style="display:flex;gap:4px;justify-content:center;margin-bottom:10px;">' +
+        '<button class="btn btn-primary" id="sw-start">Start</button>' +
+        '<button class="btn" id="sw-lap">Lap</button>' +
+        '<button class="btn" id="sw-reset">Reset</button>' +
+      '</div>' +
+      '<div id="sw-laps" style="max-height:110px;overflow-y:auto;font-size:11px;color:var(--text2);"></div>' +
+    '</div>' +
+    '<div class="clock-section" id="clock-timer" style="display:none;">' +
+      '<div id="tm-display" style="font-size:32px;font-weight:bold;margin:12px 0 10px;letter-spacing:2px;">00:00</div>' +
+      '<div style="display:flex;gap:6px;justify-content:center;margin-bottom:10px;align-items:center;">' +
+        '<input type="number" id="tm-min" class="input" style="width:60px;text-align:center;" min="0" max="99" value="5" placeholder="min">' +
+        '<span style="font-size:12px;color:var(--text2);">m</span>' +
+        '<input type="number" id="tm-sec" class="input" style="width:60px;text-align:center;" min="0" max="59" value="0" placeholder="sec">' +
+        '<span style="font-size:12px;color:var(--text2);">s</span>' +
+      '</div>' +
+      '<div style="display:flex;gap:4px;justify-content:center;">' +
+        '<button class="btn btn-primary" id="tm-start">Start</button>' +
+        '<button class="btn" id="tm-reset">Reset</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function setupClock(el) {
+  var timeEl = el.querySelector('#clock-big-time');
+  var dateEl = el.querySelector('#clock-big-date');
+  var swDisplay = el.querySelector('#sw-display');
+  var swStart = el.querySelector('#sw-start');
+  var swLap = el.querySelector('#sw-lap');
+  var swReset = el.querySelector('#sw-reset');
+  var swLaps = el.querySelector('#sw-laps');
+  var tmDisplay = el.querySelector('#tm-display');
+  var tmMin = el.querySelector('#tm-min');
+  var tmSec = el.querySelector('#tm-sec');
+  var tmStart = el.querySelector('#tm-start');
+  var tmReset = el.querySelector('#tm-reset');
+
+  var clockTick = setInterval(function() {
+    var now = new Date();
+    var h = String(now.getHours()).padStart(2, '0');
+    var m = String(now.getMinutes()).padStart(2, '0');
+    var s = String(now.getSeconds()).padStart(2, '0');
+    timeEl.textContent = h + ':' + m + ':' + s;
+    dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  }, 1000);
+  var now = new Date();
+  timeEl.textContent = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+  dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  var swRunning = false, swTime = 0, swStartAt = 0, swInterval = null, swLapCount = 0;
+
+  function swFmt(ms) {
+    var min = Math.floor(ms / 60000);
+    var sec = Math.floor((ms % 60000) / 1000);
+    var cs = Math.floor((ms % 1000) / 10);
+    return String(min).padStart(2, '0') + ':' + String(sec).padStart(2, '0') + '.' + String(cs).padStart(2, '0');
+  }
+
+  function swTick() {
+    swTime = Date.now() - swStartAt;
+    swDisplay.textContent = swFmt(swTime);
+  }
+
+  swStart.addEventListener('click', function() {
+    if (!swRunning) {
+      swStartAt = Date.now() - swTime;
+      swInterval = setInterval(swTick, 33);
+      swRunning = true;
+      swStart.textContent = 'Stop';
+    } else {
+      clearInterval(swInterval);
+      swRunning = false;
+      swStart.textContent = 'Start';
+    }
+  });
+
+  swLap.addEventListener('click', function() {
+    if (!swRunning) return;
+    swLapCount++;
+    var lap = document.createElement('div');
+    lap.style.padding = '3px 0';
+    lap.style.borderBottom = '1px solid var(--border)';
+    lap.textContent = 'Lap ' + swLapCount + ': ' + swFmt(swTime);
+    swLaps.prepend(lap);
+  });
+
+  swReset.addEventListener('click', function() {
+    clearInterval(swInterval);
+    swRunning = false;
+    swTime = 0;
+    swLapCount = 0;
+    swDisplay.textContent = '00:00.00';
+    swStart.textContent = 'Start';
+    swLaps.innerHTML = '';
+  });
+
+  var tmRunning = false, tmTime = 0, tmInterval = null;
+
+  function tmFmt(sec) {
+    var m = Math.floor(sec / 60);
+    var s = sec % 60;
+    return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  function tmTick() {
+    tmTime--;
+    tmDisplay.textContent = tmFmt(tmTime);
+    if (tmTime <= 0) {
+      clearInterval(tmInterval);
+      tmRunning = false;
+      tmStart.textContent = 'Start';
+      tmDisplay.style.color = 'var(--red)';
+      notify('Timer', 'Time is up!');
+      setTimeout(function() { tmDisplay.style.color = '' }, 2000);
+    }
+  }
+
+  tmStart.addEventListener('click', function() {
+    if (!tmRunning) {
+      if (tmTime <= 0) {
+        var mins = parseInt(tmMin.value) || 0;
+        var secs = parseInt(tmSec.value) || 0;
+        tmTime = mins * 60 + secs;
+        if (tmTime <= 0) return;
+      }
+      tmDisplay.textContent = tmFmt(tmTime);
+      tmInterval = setInterval(tmTick, 1000);
+      tmRunning = true;
+      tmStart.textContent = 'Pause';
+    } else {
+      clearInterval(tmInterval);
+      tmRunning = false;
+      tmStart.textContent = 'Resume';
+    }
+  });
+
+  tmReset.addEventListener('click', function() {
+    clearInterval(tmInterval);
+    tmRunning = false;
+    tmTime = 0;
+    tmStart.textContent = 'Start';
+    tmDisplay.textContent = '00:00';
+    tmDisplay.style.color = '';
+    tmMin.value = 5;
+    tmSec.value = 0;
+  });
+
+  el.querySelectorAll('.clock-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      el.querySelectorAll('.clock-tab').forEach(function(t) { t.classList.remove('active') });
+      tab.classList.add('active');
+      var which = tab.dataset.tab;
+      el.querySelector('#clock-stopwatch').style.display = which === 'stopwatch' ? '' : 'none';
+      el.querySelector('#clock-timer').style.display = which === 'timer' ? '' : 'none';
+    });
+  });
+
+  return function() { clearInterval(clockTick); clearInterval(swInterval); clearInterval(tmInterval) };
+}
+
+function renderEditor() {
+  return '<div class="editor-layout">' +
+    '<div class="editor-sidebar" id="editor-sidebar"></div>' +
+    '<div class="editor-main">' +
+      '<div style="display:flex;gap:4px;margin-bottom:8px;align-items:center;">' +
+        '<input type="text" id="editor-filename" class="input" style="flex:1;" placeholder="filename.txt">' +
+        '<button class="btn btn-primary" id="editor-save">Save</button>' +
+        '<button class="btn" id="editor-new">New</button>' +
+        '<button class="btn" id="editor-delete" style="color:var(--red);">Del</button>' +
+      '</div>' +
+      '<textarea id="editor-textarea" class="editor-textarea" placeholder="Start typing..."></textarea>' +
+    '</div>' +
+  '</div>';
+}
+
+function setupEditor(el) {
+  var sidebar = el.querySelector('#editor-sidebar');
+  var filename = el.querySelector('#editor-filename');
+  var textarea = el.querySelector('#editor-textarea');
+  var saveBtn = el.querySelector('#editor-save');
+  var newBtn = el.querySelector('#editor-new');
+  var delBtn = el.querySelector('#editor-delete');
+
+  function renderList() {
+    sidebar.innerHTML = '';
+    state.editorFiles.forEach(function(f) {
+      var item = document.createElement('div');
+      item.className = 'editor-file-item' + (f.id === state.editorCurrentId ? ' active' : '');
+      item.innerHTML = '<div class="editor-file-name">' + esc(f.name) + '</div><div class="editor-file-date">' + esc(f.date) + '</div>';
+      item.addEventListener('click', function() { loadFile(f.id) });
+      sidebar.appendChild(item);
+    });
+  }
+
+  function loadFile(id) {
+    var f = state.editorFiles.find(function(x) { return x.id === id });
+    if (!f) return;
+    state.editorCurrentId = id;
+    filename.value = f.name;
+    textarea.value = f.body;
+    renderList();
+  }
+
+  function saveCurrent() {
+    var f = state.editorFiles.find(function(x) { return x.id === state.editorCurrentId });
+    if (!f) return;
+    f.name = filename.value.trim() || 'untitled.txt';
+    f.body = textarea.value;
+    var d = new Date();
+    f.date = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    save();
+    renderList();
+  }
+
+  saveBtn.addEventListener('click', saveCurrent);
+
+  newBtn.addEventListener('click', function() {
+    var id = state.editorFiles.length > 0 ? Math.max.apply(null, state.editorFiles.map(function(f) { return f.id })) + 1 : 1;
+    var d = new Date();
+    var date = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    state.editorFiles.push({ id: id, name: 'untitled.txt', body: '', date: date });
+    save();
+    loadFile(id);
+  });
+
+  delBtn.addEventListener('click', function() {
+    if (state.editorFiles.length <= 1) return;
+    if (!confirm('Delete this file?')) return;
+    state.editorFiles = state.editorFiles.filter(function(f) { return f.id !== state.editorCurrentId });
+    state.editorCurrentId = state.editorFiles[0].id;
+    save();
+    loadFile(state.editorCurrentId);
+  });
+
+  textarea.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveCurrent() }
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      var start = textarea.selectionStart;
+      var end = textarea.selectionEnd;
+      textarea.value = textarea.value.substring(0, start) + '  ' + textarea.value.substring(end);
+      textarea.selectionStart = textarea.selectionEnd = start + 2;
+    }
+  });
+
+  if (state.editorFiles.length > 0) loadFile(state.editorCurrentId);
+  else renderList();
+  return function() {};
+}
+
+function renderFiles() {
+  return '<div>' +
+    '<div class="files-toolbar" id="files-toolbar">' +
+      '<button class="btn" id="files-back" disabled>&lt;</button>' +
+      '<div id="files-breadcrumb" style="flex:1;font-size:11px;color:var(--text2);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></div>' +
+      '<button class="btn" id="files-new-folder">+Dir</button>' +
+      '<button class="btn" id="files-new-file">+File</button>' +
+    '</div>' +
+    '<div id="files-list" class="files-list"></div>' +
+  '</div>';
+}
+
+function setupFiles(el) {
+  var list = el.querySelector('#files-list');
+  var breadcrumb = el.querySelector('#files-breadcrumb');
+  var backBtn = el.querySelector('#files-back');
+  var newFolderBtn = el.querySelector('#files-new-folder');
+  var newFileBtn = el.querySelector('#files-new-file');
+
+  function getDir() {
+    var node = state.fs;
+    for (var i = 0; i < state.fsPath.length; i++) {
+      var found = node.children.find(function(c) { return c.name === state.fsPath[i] && c.type === 'folder' });
+      if (!found) { state.fsPath = state.fsPath.slice(0, i); return state.fs; }
+      node = found;
+    }
+    return node;
+  }
+
+  function renderBreadcrumb() {
+    var parts = ['<span style="cursor:pointer;color:var(--accent);" data-bc="-1">/</span>'];
+    state.fsPath.forEach(function(p, i) {
+      parts.push('<span style="cursor:pointer;color:var(--accent);" data-bc="' + i + '">' + esc(p) + '</span>');
+    });
+    breadcrumb.innerHTML = parts.join(' / ');
+    backBtn.disabled = state.fsPath.length === 0;
+    breadcrumb.querySelectorAll('[data-bc]').forEach(function(span) {
+      span.addEventListener('click', function() {
+        var idx = parseInt(span.dataset.bc);
+        state.fsPath = idx < 0 ? [] : state.fsPath.slice(0, idx + 1);
+        renderDir();
+      });
+    });
+  }
+
+  function renderDir() {
+    var dir = getDir();
+    renderBreadcrumb();
+    list.innerHTML = '';
+    if (!dir.children || dir.children.length === 0) {
+      list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text2);font-size:12px;">Empty folder</div>';
+      return;
+    }
+    var sorted = dir.children.slice().sort(function(a, b) {
+      if (a.type === b.type) return a.name.localeCompare(b.name);
+      return a.type === 'folder' ? -1 : 1;
+    });
+    sorted.forEach(function(item) {
+      var row = document.createElement('div');
+      row.className = 'files-row';
+      var iconStr = item.type === 'folder' ? icon(iconBase + 'folder.svg') : icon(iconBase + 'file.svg');
+      row.innerHTML = iconStr + '<span class="files-name">' + esc(item.name) + '</span>' +
+        '<span class="files-type">' + (item.type === 'folder' ? 'folder' : 'file') + '</span>' +
+        '<button class="files-rename btn" style="font-size:10px;padding:2px 6px;">Rename</button>' +
+        '<button class="files-del btn" style="font-size:10px;padding:2px 6px;color:var(--red);">X</button>';
+      if (item.type === 'folder') {
+        row.style.cursor = 'pointer';
+        row.addEventListener('dblclick', function() {
+          state.fsPath.push(item.name);
+          renderDir();
+        });
+      } else {
+        row.style.cursor = 'pointer';
+        row.addEventListener('dblclick', function() {
+          var id = state.editorFiles.length > 0 ? Math.max.apply(null, state.editorFiles.map(function(f) { return f.id })) + 1 : 1;
+          var d = new Date();
+          var date = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+          state.editorFiles.push({ id: id, name: item.name, body: item.body || '', date: date });
+          state.editorCurrentId = id;
+          save();
+          if (state.windows.has('editor')) wm.close('editor');
+          wm.open('editor');
+          notify('Opened in Editor', item.name);
+        });
+      }
+      row.querySelector('.files-rename').addEventListener('click', function(e) {
+        e.stopPropagation();
+        var newName = prompt('Rename "' + item.name + '" to:', item.name);
+        if (newName && newName.trim() && newName.trim() !== item.name) {
+          item.name = newName.trim();
+          save();
+          renderDir();
+        }
+      });
+      row.querySelector('.files-del').addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (!confirm('Delete "' + item.name + '"?')) return;
+        dir.children = dir.children.filter(function(c) { return c !== item });
+        save();
+        renderDir();
+      });
+      list.appendChild(row);
+    });
+  }
+
+  backBtn.addEventListener('click', function() {
+    if (state.fsPath.length > 0) { state.fsPath.pop(); renderDir() }
+  });
+
+  newFolderBtn.addEventListener('click', function() {
+    var name = prompt('Folder name:');
+    if (!name || !name.trim()) return;
+    var dir = getDir();
+    dir.children.push({ name: name.trim(), type: 'folder', children: [] });
+    save();
+    renderDir();
+  });
+
+  newFileBtn.addEventListener('click', function() {
+    var name = prompt('File name:');
+    if (!name || !name.trim()) return;
+    var dir = getDir();
+    dir.children.push({ name: name.trim(), type: 'file', body: '' });
+    save();
+    renderDir();
+  });
+
+  renderDir();
+  return function() {};
+}
+
 function renderDesktopIcons() {
   var c = $('desktop-icons');
   c.innerHTML = '';
-  var desktopApps = ['welcome','about','projects','notes','terminal','calculator','settings','browser','music','weather','calendar','tasks'];
+  var desktopApps = ['welcome','about','projects','notes','terminal','calculator','settings','browser','music','weather','calendar','tasks','clock','editor','files'];
   desktopApps.forEach(function(appId) {
     var app = APPS[appId];
     if (!app) return;
